@@ -1,4 +1,4 @@
-package com.jdacodes.firebaseapp.sign_in.presentation
+package com.jdacodes.firebaseapp.feature_auth.presentation
 
 import android.net.Uri
 import android.util.Log

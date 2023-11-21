@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.jdacodes.firebaseapp.sign_in.presentation.UserData
+import com.jdacodes.firebaseapp.feature_auth.presentation.UserData
 
 @Composable
 fun ProfileScreen(

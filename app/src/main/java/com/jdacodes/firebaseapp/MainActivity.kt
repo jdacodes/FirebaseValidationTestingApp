@@ -22,14 +22,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.identity.Identity
+import com.jdacodes.firebaseapp.feature_auth.presentation.GoogleAuthUiClient
+import com.jdacodes.firebaseapp.feature_auth.presentation.SignInFormEvent
+import com.jdacodes.firebaseapp.feature_auth.presentation.SignInScreen
+import com.jdacodes.firebaseapp.feature_auth.presentation.SignInViewModel
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpScreen
 import com.jdacodes.firebaseapp.profile.ProfileScreen
-import com.jdacodes.firebaseapp.sign_in.presentation.GoogleAuthUiClient
-import com.jdacodes.firebaseapp.sign_in.presentation.SignInFormEvent
-import com.jdacodes.firebaseapp.sign_in.presentation.SignInScreen
-import com.jdacodes.firebaseapp.sign_in.presentation.SignInViewModel
 import com.jdacodes.firebaseapp.ui.theme.FirebaseAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val googleAuthUiClient by lazy {
         GoogleAuthUiClient(
@@ -148,6 +151,9 @@ class MainActivity : ComponentActivity() {
                                         viewModel.onSignInResult(signInResult)
                                     }
                                 },
+                                onClickDontHaveAccount = { navController.navigate("sign_up") },
+                                onClickForgotPassword = { navController.navigate("forgot_password") }
+                                // TODO: No Forgot password route
                             )
                         }
 
@@ -167,6 +173,18 @@ class MainActivity : ComponentActivity() {
                                         navController.popBackStack()
                                     }
                                 }
+                            )
+                        }
+
+                        //Composable block of signup route
+                        composable("sign_up") {
+
+//                            val viewModel = viewModel<SignUpViewModel>()
+//                            val state = viewModel.state
+                            val context = LocalContext.current
+
+                            SignUpScreen(
+                                navigateBack = { navController.popBackStack() },
                             )
                         }
 

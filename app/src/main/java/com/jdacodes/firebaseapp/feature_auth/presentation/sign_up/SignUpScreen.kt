@@ -1,8 +1,6 @@
-package com.jdacodes.firebaseapp.sign_in.presentation
+package com.jdacodes.firebaseapp.feature_auth.presentation.sign_up
 
 import android.annotation.SuppressLint
-import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,11 +26,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -47,144 +43,147 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jdacodes.firebaseapp.R
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.jdacodes.firebaseapp.core.Constants.EMPTY_STRING
+import com.jdacodes.firebaseapp.core.Constants.SIGNUP_SUCCESSFUL_MESSAGE
+import com.jdacodes.firebaseapp.core.Constants.VERIFY_EMAIL_MESSAGE
+import com.jdacodes.firebaseapp.core.domain.model.CheckFieldState
 import com.jdacodes.firebaseapp.core.domain.model.TextFieldState
+import com.jdacodes.firebaseapp.core.util.Response
+import com.jdacodes.firebaseapp.core.util.UIEvents
+import com.jdacodes.firebaseapp.core.util.Utils.Companion.showMessage
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SignUp
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SignUpTopBar
+import kotlinx.coroutines.flow.collectLatest
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignInScreen(
-    signInState: SignInState,
-    signInFormState: SignInFormState,
-    onClickSignInGoogle: () -> Unit,
-    onClickSignInEmailAndPassword: () -> Unit,
-    viewModel: SignInViewModel
+fun SignUpScreen(
+    navigateBack: () -> Unit,
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
-
-    val usernameState = signInFormState.email
-    val passwordState = signInFormState.password
-    val rememberMeState = viewModel.rememberMeState.value
-
-
-    //val scaffold = rememberScaffoldState() is deprecated in Material3
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(key1 = signInState.signInError) {
-        signInState.signInError?.let { error ->
-            Toast.makeText(
-                context,
-                error,
-                Toast.LENGTH_LONG
-            ).show()
+    val usernameState = viewModel.usernameState.value
+    val passwordState = viewModel.passwordState.value
+    val repeatedPasswordState = viewModel.retypedPasswordState.value
+    val acceptedTermsState = viewModel.acceptedTermsState.value
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is UIEvents.SnackBarEvent -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.message,
+                        duration = SnackbarDuration.Short
+                    )
+                }
+
+                else -> {}
+            }
         }
     }
-    // TODO: Another LaunchedEffect for eventFlow
 
     Scaffold(
         topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-            ) {
-                Column(
-                    Modifier
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Text(
-                        text = "Sign In",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Sign In to continue",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Light,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-
+            SignUpTopBar(navigateBack = navigateBack)
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) {
-        SignInScreenContent(
-            usernameState = usernameState,
-            passwordState = passwordState,
-            rememberMeState = rememberMeState,
-            signInState = signInState,
-            signInFormState = signInFormState,
-            onUserNameTextChange = {
-//                viewModel.setUsername(it)
-                viewModel.onEvent(SignInFormEvent.EmailChanged(it))
-            },
-            onPasswordTextChange = {
-//                viewModel.setPassword(it)
-                viewModel.onEvent(SignInFormEvent.PasswordChanged(it))
-            },
-            onRememberMeClicked = {
-                viewModel.setRememberMe(it)
-            },
-            onClickForgotPassword = {
-                // TODO: Go to forgot password screen
-            },
-            onClickDontHaveAccount = {
-                // TODO: Go to sign up screen
-            },
-            onClickSignInGoogle = onClickSignInGoogle,
-            onClickSignInEmailAndPassword = onClickSignInEmailAndPassword,
-            onAuthComplete = { result ->
-                viewModel.onSignInResult(result = result)
-//                    Toast.makeText(context, "It works!", Toast.LENGTH_SHORT).show()
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        content = { padding ->
+            SignUpScreenContent(
+                usernameState = usernameState,
+                passwordState = passwordState,
+                repeatedPasswordState = repeatedPasswordState,
+                acceptedTermsState = acceptedTermsState,
+                onUserNameTextChange = { viewModel.setUsername(it) },
+                onPasswordTextChange = { viewModel.setPassword(it) },
+                onRepeatPasswordTextChange = { viewModel.setRetypedPassword(it) },
+                onAcceptedTermsClicked = { viewModel.setAcceptedTerms(it) },
+                padding = padding,
+                onClickSignUp = {
+                    viewModel.signUpWithEmailAndPassword()
+                },
+                navigateBack = navigateBack,
+                viewModel = viewModel
 
-            },
-            onAuthError = { result ->
-                viewModel.onSignInResult(result)
-                Toast.makeText(context, "Try again later", Toast.LENGTH_SHORT)
-                    .show()
+            )
+        }
+    )
 
-            },
-        )
-    }
+//    SendEmailVerification()
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-private fun SignInScreenContent(
-    usernameState: String,
-    passwordState: String,
-    rememberMeState: Boolean,
-    signInState: SignInState,
-    signInFormState: SignInFormState,
+fun SignUpScreenContent(
+    usernameState: TextFieldState,
+    passwordState: TextFieldState,
+    repeatedPasswordState: TextFieldState,
+    acceptedTermsState: CheckFieldState,
     onUserNameTextChange: (String) -> Unit,
     onPasswordTextChange: (String) -> Unit,
-    onRememberMeClicked: (Boolean) -> Unit,
-    onClickForgotPassword: () -> Unit,
-    onClickDontHaveAccount: () -> Unit,
-    onClickSignInGoogle: () -> Unit,
-    onClickSignInEmailAndPassword: () -> Unit,
-    onAuthComplete: (SignInResult) -> Unit,
-    onAuthError: (SignInResult) -> Unit,
+    onRepeatPasswordTextChange: (String) -> Unit,
+    onAcceptedTermsClicked: (Boolean) -> Unit,
+    onClickSignUp: () -> Unit,
+    padding: PaddingValues,
+    navigateBack: () -> Unit,
+    viewModel: SignUpViewModel
 
-    ) {
+) {
+
+    val context = LocalContext.current
+
+    var email by rememberSaveable(
+        stateSaver = TextFieldValue.Saver,
+        init = {
+            mutableStateOf(
+                value = TextFieldValue(
+                    text = EMPTY_STRING
+                )
+            )
+        }
+    )
+    var password by rememberSaveable(
+        stateSaver = TextFieldValue.Saver,
+        init = {
+            mutableStateOf(
+                value = TextFieldValue(
+                    text = EMPTY_STRING
+                )
+            )
+        }
+    )
+
+    var retypedPassword by rememberSaveable(
+        stateSaver = TextFieldValue.Saver,
+        init = {
+            mutableStateOf(
+                value = TextFieldValue(
+                    text = EMPTY_STRING
+                )
+            )
+        }
+    )
+
+    var acceptedTerms by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val keyboard = LocalSoftwareKeyboardController.current
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -202,14 +201,14 @@ private fun SignInScreenContent(
                 backgroundColor = MaterialTheme.colorScheme.primary
             )
         )
-        LazyColumn(contentPadding = PaddingValues(16.dp)) {
 
+        LazyColumn(contentPadding = PaddingValues(16.dp)) {
             item {
                 Spacer(modifier = Modifier.height(64.dp))
                 Column {
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = usernameState,
+                        value = usernameState.text,
                         onValueChange = {
                             onUserNameTextChange(it)
                         },
@@ -224,12 +223,12 @@ private fun SignInScreenContent(
                         ),
                         maxLines = 1,
                         singleLine = true,
-                        isError = signInFormState.emailError != null,
+                        isError = usernameState.error != null,
                         colors = outlineTextFieldColors
                     )
-                    if (signInFormState.emailError != null) {
+                    if (usernameState.error != null) {
                         Text(
-                            text = signInFormState.emailError ?: "",
+                            text = usernameState.error ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onError,
                             textAlign = TextAlign.End,
@@ -246,7 +245,7 @@ private fun SignInScreenContent(
                 Column {
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = passwordState,
+                        value = passwordState.text,
                         onValueChange = {
                             onPasswordTextChange(it)
                         },
@@ -276,12 +275,64 @@ private fun SignInScreenContent(
                         },
                         maxLines = 1,
                         singleLine = true,
-                        isError = signInFormState.passwordError != null,
+                        isError = passwordState.error != null,
                         colors = outlineTextFieldColors
                     )
-                    if (signInFormState.passwordError != null) {
+                    if (passwordState.error != null) {
                         Text(
-                            text = signInFormState.passwordError ?: "",
+                            text = passwordState.error ?: "",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onError,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            }
+
+            item {
+                var passwordVisible by rememberSaveable { mutableStateOf(false) }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column {
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = repeatedPasswordState.text,
+                        onValueChange = {
+                            onRepeatPasswordTextChange(it)
+                        },
+                        label = {
+                            Text(
+                                text = "Repeat Password",
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None
+                        else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                        ),
+                        trailingIcon = {
+                            val image = if (passwordVisible)
+                                Icons.Filled.Visibility
+                            else Icons.Filled.VisibilityOff
+
+                            // Please provide localized description for accessibility services
+                            val description =
+                                if (passwordVisible) "Hide repeated password" else "Show repeated password"
+
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(imageVector = image, description)
+                            }
+                        },
+                        maxLines = 1,
+                        singleLine = true,
+                        isError = passwordState.error != null,
+                        colors = outlineTextFieldColors
+                    )
+                    if (repeatedPasswordState.error != null) {
+                        Text(
+                            text = repeatedPasswordState.error ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onError,
                             textAlign = TextAlign.End,
@@ -302,31 +353,39 @@ private fun SignInScreenContent(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Checkbox(checked = rememberMeState, onCheckedChange = {
-                            onRememberMeClicked(it)
+                        Checkbox(checked = acceptedTermsState.checked, onCheckedChange = {
+                            onAcceptedTermsClicked(it)
                         })
                         Text(
-                            text = "Remember me",
+                            text = "Accepted Terms of Service",
                             fontSize = 12.sp,
 //                           fontFamily = workSans,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                     }
-                    TextButton(onClick = onClickForgotPassword) {
-                        Text(
-                            text = "Forgot password?",
-                            color = MaterialTheme.colorScheme.tertiary,
-                        )
-                    }
+                }
+                if (acceptedTermsState.error != null) {
+                    Text(
+                        text = acceptedTermsState.error ?: "",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onError,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
 
             item {
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
-                    onClick = onClickSignInEmailAndPassword,
+                    onClick = onClickSignUp,
                     shape = CircleShape,
-                    enabled = !signInState.isLoading,
+                    enabled = when (viewModel.signUpResponse) {
+                        is Response.Loading -> false
+                        else -> {
+                            true
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                     )
@@ -335,99 +394,29 @@ private fun SignInScreenContent(
                         color = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp), text = "Sign In", textAlign = TextAlign.Center
+                            .padding(12.dp), text = "Sign Up", textAlign = TextAlign.Center
                     )
                 }
             }
 
             item {
-                Spacer(modifier = Modifier.height(24.dp))
-
-                TextButton(
-                    onClick = onClickDontHaveAccount,
-                    modifier = Modifier.fillMaxWidth()
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            append("Don't have an account?")
-                            append(" ")
-                            withStyle(
-                                style = SpanStyle(
-                                    fontWeight = FontWeight.Bold
-                                )
-                            ) {
-                                append("Sign Up")
-                            }
+
+                    SignUp(
+                        sendEmailVerification = {
+//            viewModel.sendEmailVerification()
                         },
-//                        fontFamily = workSans,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.primary,
+                        showVerifyEmailMessage = {
+                            showMessage(context, SIGNUP_SUCCESSFUL_MESSAGE)
+                        }
                     )
                 }
             }
-
-            item {
-                Spacer(modifier = Modifier.height(32.dp))
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (signInState.isLoading) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
-
-            item {
-                //Google and Facebook Sign in IconButtons
-
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val containerModifier = Modifier.size(48.dp)
-                        val iconModifier = Modifier.size(24.dp)
-                        val backgroundColor = Color(0xFFB9B9B9).copy(alpha = 0.2f)
-                        val contentColor = Color(0xFFB6B6B6)
-
-                        OutlinedIconButton(
-                            onClick = onClickSignInGoogle,
-                            colors = IconButtonDefaults.outlinedIconButtonColors(
-                                containerColor = backgroundColor,
-                                contentColor = contentColor
-                            ),
-                            border = BorderStroke(width = 2.dp, color = contentColor),
-                            modifier = containerModifier
-                        ) {
-                            Icon(
-                                modifier = iconModifier,
-                                painter = painterResource(id = R.drawable.ic_google_round),
-                                tint = Color.Unspecified,
-                                contentDescription = "Google"
-                            )
-                        }
-                        Spacer(
-                            modifier = Modifier
-                                .height(20.dp)
-                                .padding(end = 16.dp)
-                        )
-                        FacebookButton(
-                            onAuthComplete = onAuthComplete,
-                            onAuthError = onAuthError,
-                        )
-                    }
-
-                }
-            }
-
         }
-
-
     }
 }

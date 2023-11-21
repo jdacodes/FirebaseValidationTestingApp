@@ -1,4 +1,4 @@
-package com.jdacodes.firebaseapp.sign_in.presentation
+package com.jdacodes.firebaseapp.feature_auth.presentation
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jdacodes.firebaseapp.core.domain.model.TextFieldState
-import com.jdacodes.firebaseapp.sign_in.domain.use_case.ValidateEmail
-import com.jdacodes.firebaseapp.sign_in.domain.use_case.ValidatePassword
+import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateEmail
+import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidatePassword
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -75,32 +75,32 @@ class SignInViewModel(
                 stateForm = stateForm.copy(password = event.password)
             }
             is SignInFormEvent.Submit -> {
-                submitData()
+//                submitData()
             }
         }
     }
 
-    private fun submitData() {
-        val emailResult = validateEmail.execute(stateForm.email)
-        val passwordResult = validatePassword.execute(stateForm.password)
-
-        val hasError = listOf(
-            emailResult,
-            passwordResult
-        ).any { !it.successful }
-
-        stateForm = stateForm.copy(
-            emailError = emailResult.errorMessage,
-            passwordError = passwordResult.errorMessage,
-        )
-
-        if(hasError) { return }
-
-        viewModelScope.launch {
-            validationEventChannel.send(ValidationEvent.Success)
-        }
-
-    }
+//    private fun submitData() {
+//        val emailResult = validateEmail.execute(stateForm.email)
+//        val passwordResult = validatePassword.execute(stateForm.password)
+//
+//        val hasError = listOf(
+//            emailResult,
+//            passwordResult
+//        ).any { !it.successful }
+//
+//        stateForm = stateForm.copy(
+//            emailError = emailResult.errorMessage,
+//            passwordError = passwordResult.errorMessage,
+//        )
+//
+//        if(hasError) { return }
+//
+//        viewModelScope.launch {
+//            validationEventChannel.send(ValidationEvent.Success)
+//        }
+//
+//    }
 
     sealed class ValidationEvent {
         object Success : ValidationEvent()

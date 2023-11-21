@@ -1,4 +1,4 @@
-package com.jdacodes.firebaseapp.sign_in.presentation
+package com.jdacodes.firebaseapp.feature_auth.presentation
 
 import android.content.Context
 import android.content.Intent
@@ -10,6 +10,8 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.jdacodes.firebaseapp.R
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpResult
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.UserSignUpData
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 
@@ -114,6 +116,30 @@ class GoogleAuthUiClient(
             e.printStackTrace()
             if (e is CancellationException) throw e
             SignInResult(
+                data = null,
+                errorMessage = e.message
+            )
+        }
+    }
+
+    suspend fun signUpWithEmailAndPassword(email: String, password: String): SignUpResult {
+        return try {
+            val user = auth.createUserWithEmailAndPassword(email, password).await().user
+            SignUpResult(
+                data = user?.run {
+                    UserSignUpData(
+                        userId = uid,
+                        username = displayName,
+                        profilePictureUrl = photoUrl?.toString()
+                    )
+                },
+                errorMessage = null
+
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            if (e is CancellationException) throw e
+            SignUpResult(
                 data = null,
                 errorMessage = e.message
             )
