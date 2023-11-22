@@ -59,9 +59,9 @@ class SignUpViewModel @Inject constructor(
         signUpResponse = Response.Loading
 
         val signUpResult = signUpUseCase(
-            username = usernameState.value.text,
-            password = passwordState.value.text,
-            retypedPassword = retypedPasswordState.value.text,
+            username = usernameState.value.text.trim(),
+            password = passwordState.value.text.trim(),
+            retypedPassword = retypedPasswordState.value.text.trim(),
             acceptedTerms = acceptedTermsState.value.checked
 
         )
@@ -102,13 +102,11 @@ class SignUpViewModel @Inject constructor(
                     SIGNUP_FAILURE_MESSAGE
                 )
             }
-
-
             else -> {}
         }
     }
 
-    fun resetState() {
+    private fun resetState() {
         _usernameState.value = usernameState.value.copy(error = null)
         _passwordState.value = passwordState.value.copy(error = null)
         _retypedPasswordState.value = retypedPasswordState.value.copy(error = null)

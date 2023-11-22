@@ -5,6 +5,8 @@ import com.google.firebase.ktx.Firebase
 import com.jdacodes.firebaseapp.feature_auth.data.repository.AuthRepositoryImpl
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.SignUpUseCase
+import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateEmail
+import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidatePassword
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,5 +27,17 @@ object AuthModule {
     @Singleton
     fun provideSignUpUseCase(authRepository: AuthRepository): SignUpUseCase {
         return SignUpUseCase(authRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideValidateEmail(authRepository: AuthRepository): ValidateEmail {
+        return ValidateEmail(authRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideValidatePassword(): ValidatePassword {
+        return ValidatePassword()
     }
 }

@@ -81,8 +81,6 @@ fun SignInScreen(
     val passwordState = signInFormState.password
     val rememberMeState = viewModel.rememberMeState.value
 
-
-    //val scaffold = rememberScaffoldState() is deprecated in Material3
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(key1 = signInState.signInError) {
@@ -154,7 +152,7 @@ fun SignInScreen(
 
             },
             onAuthError = { result ->
-                viewModel.onSignInResult(result)
+                viewModel.onSignInResult(result = result)
                 Toast.makeText(context, "Try again later", Toast.LENGTH_SHORT)
                     .show()
 

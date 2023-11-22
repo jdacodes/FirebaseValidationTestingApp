@@ -1,7 +1,6 @@
 package com.jdacodes.firebaseapp
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -15,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,9 +54,10 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = "sign_in") {
                         //Composable block with sign_in route
                         composable("sign_in") {
-                            val viewModel = viewModel<SignInViewModel>()
+//                            val viewModel = viewModel<SignInViewModel>()
+                            val viewModel: SignInViewModel = hiltViewModel()
                             val signInState by viewModel.state.collectAsStateWithLifecycle()
-                            val signInFormState = viewModel.stateForm
+                            val signInFormState = viewModel.formState
                             //Check if the user is already signed in
                             LaunchedEffect(key1 = Unit) {
                                 if (googleAuthUiClient.getSignedInUser() != null) {
@@ -85,6 +86,8 @@ class MainActivity : ComponentActivity() {
                                 viewModel.validationEvents.collect { event ->
                                     when (event) {
                                         is SignInViewModel.ValidationEvent.Success -> {
+                                            viewModel.updateSignInState()
+
 //                                            Toast.makeText(
 //                                                context,
 //                                                "Registration successful",
@@ -125,31 +128,32 @@ class MainActivity : ComponentActivity() {
                                 },
                                 viewModel = viewModel,
                                 onClickSignInEmailAndPassword = {
-                                    lifecycleScope.launch {
-                                        //trigger validation
+
+//                                    lifecycleScope.launch {
+//                                        //trigger validation
                                         viewModel.onEvent(SignInFormEvent.Submit)
-
-                                        Log.d(
-                                            "inside_onClickSignInEmailAndPassword",
-                                            signInFormState.email.trim()
-                                        )
-                                        Log.d(
-                                            "inside_onClickSignInEmailAndPassword",
-                                            signInFormState.password.trim()
-                                        )
-
-                                        val signInResult =
-                                            googleAuthUiClient.signInWithEmailAndPassword(
-                                                signInFormState.email.trim(),
-                                                signInFormState.password.trim(),
-//                                                "johndoe@example.com", "test123"
-                                            )
-                                        Log.d(
-                                            "inside_onClickSignInEmailAndPassword",
-                                            "$signInResult"
-                                        )
-                                        viewModel.onSignInResult(signInResult)
-                                    }
+//
+//                                        Log.d(
+//                                            "inside_onClickSignInEmailAndPassword",
+//                                            signInFormState.email.trim()
+//                                        )
+//                                        Log.d(
+//                                            "inside_onClickSignInEmailAndPassword",
+//                                            signInFormState.password.trim()
+//                                        )
+//
+//                                        val signInResult =
+//                                            googleAuthUiClient.signInWithEmailAndPassword(
+//                                                signInFormState.email.trim(),
+//                                                signInFormState.password.trim(),
+////                                                "johndoe@example.com", "test123"
+//                                            )
+//                                        Log.d(
+//                                            "inside_onClickSignInEmailAndPassword",
+//                                            "$signInResult"
+//                                        )
+//                                        viewModel.onSignInResult(signInResult)
+//                                    }
                                 },
                                 onClickDontHaveAccount = { navController.navigate("sign_up") },
                                 onClickForgotPassword = { navController.navigate("forgot_password") }

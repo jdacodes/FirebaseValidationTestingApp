@@ -7,24 +7,31 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jdacodes.firebaseapp.core.domain.model.TextFieldState
+import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
+import com.jdacodes.firebaseapp.feature_auth.domain.use_case.SignInUseCase
+import com.jdacodes.firebaseapp.feature_auth.domain.use_case.SignUpUseCase
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateEmail
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidatePassword
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignInViewModel(
-    private val validateEmail: ValidateEmail = ValidateEmail(),
-    private val validatePassword: ValidatePassword = ValidatePassword(),
+@HiltViewModel
+class SignInViewModel @Inject constructor(
+    private val validateEmail: ValidateEmail,
+    private val validatePassword: ValidatePassword,
+//    private val signInUseCase: SignInUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
 
-    var stateForm by mutableStateOf(SignInFormState())
+    var formState by mutableStateOf(SignInFormState())
 
     private val _usernameState = mutableStateOf(TextFieldState(text = "johndoe@example.com"))
     val usernameState: State<TextFieldState> = _usernameState
@@ -68,39 +75,74 @@ class SignInViewModel(
     fun onEvent(event: SignInFormEvent) {
         when (event) {
             is SignInFormEvent.EmailChanged -> {
-                stateForm = stateForm.copy(email = event.email)
+                formState = formState.copy(email = event.email)
             }
 
             is SignInFormEvent.PasswordChanged -> {
-                stateForm = stateForm.copy(password = event.password)
+                formState = formState.copy(password = event.password)
             }
+
             is SignInFormEvent.Submit -> {
-//                submitData()
+                viewModelScope.launch { submitData() }
+
             }
         }
     }
 
-//    private fun submitData() {
-//        val emailResult = validateEmail.execute(stateForm.email)
-//        val passwordResult = validatePassword.execute(stateForm.password)
-//
+    private suspend fun submitData() {
+        _state.update { it.copy(isLoading = true) }
+        val emailResult = validateEmail.execute(formState.email)
+        val passwordResult = validatePassword.execute(formState.password)
+
+//        val signInResult = signInUseCase(
+//            username = formState.email.trim(),
+//            password = formState.password.trim()
+//        )
+
 //        val hasError = listOf(
 //            emailResult,
 //            passwordResult
 //        ).any { !it.successful }
-//
-//        stateForm = stateForm.copy(
-//            emailError = emailResult.errorMessage,
-//            passwordError = passwordResult.errorMessage,
-//        )
-//
-//        if(hasError) { return }
-//
-//        viewModelScope.launch {
-//            validationEventChannel.send(ValidationEvent.Success)
-//        }
-//
-//    }
+
+        val hasError = !(emailResult.successful == true && passwordResult.successful == true)
+
+
+        formState = formState.copy(
+            emailError = emailResult.errorMessage,
+            passwordError = passwordResult.errorMessage,
+        )
+
+
+
+        if (hasError) {
+            _state.update {
+                it.copy(
+                    isSignInSuccessful = false,
+                    signInError = formState.emailError.toString()
+                )
+            }
+            _state.update { it.copy(isLoading = false) }
+            return
+        }
+
+        viewModelScope.launch {
+
+            validationEventChannel.send(ValidationEvent.Success)
+        }
+
+    }
+
+    fun updateSignInState() {
+
+        viewModelScope.launch {
+            val result = validateEmail.firebaseSignInWithEmailAndPassword(
+                formState.email,
+                formState.password
+            )
+            onSignInResult(result)
+        }
+
+    }
 
     sealed class ValidationEvent {
         object Success : ValidationEvent()
