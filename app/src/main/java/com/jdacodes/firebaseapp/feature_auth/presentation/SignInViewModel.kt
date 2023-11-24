@@ -6,10 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jdacodes.firebaseapp.core.domain.model.TextFieldState
-import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
-import com.jdacodes.firebaseapp.feature_auth.domain.use_case.SignInUseCase
-import com.jdacodes.firebaseapp.feature_auth.domain.use_case.SignUpUseCase
+import com.jdacodes.firebaseapp.core.Constants.SIGNIN_FAILURE_MESSAGE
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateEmail
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidatePassword
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +22,6 @@ import javax.inject.Inject
 class SignInViewModel @Inject constructor(
     private val validateEmail: ValidateEmail,
     private val validatePassword: ValidatePassword,
-//    private val signInUseCase: SignInUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SignInState())
@@ -33,20 +29,7 @@ class SignInViewModel @Inject constructor(
 
     var formState by mutableStateOf(SignInFormState())
 
-    private val _usernameState = mutableStateOf(TextFieldState(text = "johndoe@example.com"))
-    val usernameState: State<TextFieldState> = _usernameState
-
-    fun setUsername(value: String) {
-        _usernameState.value = usernameState.value.copy(text = value)
-    }
-
-    private val _passwordState = mutableStateOf(TextFieldState(text = "test123"))
-    val passwordState: State<TextFieldState> = _passwordState
-
-    fun setPassword(value: String) {
-        _passwordState.value = _passwordState.value.copy(text = value)
-    }
-
+    // TODO: Implement remember me functionality for sign in screen
     private val _rememberMeState = mutableStateOf(false)
     val rememberMeState: State<Boolean> = _rememberMeState
 
@@ -86,39 +69,28 @@ class SignInViewModel @Inject constructor(
                 viewModelScope.launch { submitData() }
 
             }
+
+            else -> {}
         }
     }
 
     private suspend fun submitData() {
         _state.update { it.copy(isLoading = true) }
-        val emailResult = validateEmail.execute(formState.email)
-        val passwordResult = validatePassword.execute(formState.password)
-
-//        val signInResult = signInUseCase(
-//            username = formState.email.trim(),
-//            password = formState.password.trim()
-//        )
-
-//        val hasError = listOf(
-//            emailResult,
-//            passwordResult
-//        ).any { !it.successful }
+        val emailResult = validateEmail.execute(formState.email.trim())
+        val passwordResult = validatePassword.execute(formState.password.trim())
 
         val hasError = !(emailResult.successful == true && passwordResult.successful == true)
-
 
         formState = formState.copy(
             emailError = emailResult.errorMessage,
             passwordError = passwordResult.errorMessage,
         )
 
-
-
         if (hasError) {
             _state.update {
                 it.copy(
                     isSignInSuccessful = false,
-                    signInError = formState.emailError.toString()
+                    signInError = SIGNIN_FAILURE_MESSAGE
                 )
             }
             _state.update { it.copy(isLoading = false) }
@@ -129,7 +101,6 @@ class SignInViewModel @Inject constructor(
 
             validationEventChannel.send(ValidationEvent.Success)
         }
-
     }
 
     fun updateSignInState() {
@@ -141,7 +112,6 @@ class SignInViewModel @Inject constructor(
             )
             onSignInResult(result)
         }
-
     }
 
     sealed class ValidationEvent {

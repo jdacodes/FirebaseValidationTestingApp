@@ -22,4 +22,6 @@ object Constants {
     const val ACCESS_REVOKED_MESSAGE = "Your access has been revoked."
     const val SIGNUP_SUCCESSFUL_MESSAGE = "Sign up successful! You can now Sign in"
     const val SIGNUP_FAILURE_MESSAGE = "Sign up failure.Please try again"
+    const val SIGNIN_SUCCESSFUL_MESSAGE = "Sign in successful! Welcome back"
+    const val SIGNIN_FAILURE_MESSAGE = "Sign in failure. Please try again"
 }

@@ -1,36 +1,18 @@
 package com.jdacodes.firebaseapp
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.identity.Identity
 import com.jdacodes.firebaseapp.feature_auth.presentation.GoogleAuthUiClient
-import com.jdacodes.firebaseapp.feature_auth.presentation.SignInFormEvent
-import com.jdacodes.firebaseapp.feature_auth.presentation.SignInScreen
-import com.jdacodes.firebaseapp.feature_auth.presentation.SignInViewModel
-import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpScreen
-import com.jdacodes.firebaseapp.profile.ProfileScreen
+import com.jdacodes.firebaseapp.navigation.NavGraph
 import com.jdacodes.firebaseapp.ui.theme.FirebaseAppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -51,148 +33,12 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "sign_in") {
-                        //Composable block with sign_in route
-                        composable("sign_in") {
-//                            val viewModel = viewModel<SignInViewModel>()
-                            val viewModel: SignInViewModel = hiltViewModel()
-                            val signInState by viewModel.state.collectAsStateWithLifecycle()
-                            val signInFormState = viewModel.formState
-                            //Check if the user is already signed in
-                            LaunchedEffect(key1 = Unit) {
-                                if (googleAuthUiClient.getSignedInUser() != null) {
-                                    navController.navigate("profile")
-                                }
-                            }
+                    NavGraph(
+                        navController = navController,
+                        googleAuthUiClient = googleAuthUiClient
+                    )
 
-                            //Send the intent we get from intentSender
-                            val launcher = rememberLauncherForActivityResult(
-                                contract = ActivityResultContracts.StartIntentSenderForResult(),
-                                onResult = { result ->
-                                    if (result.resultCode == RESULT_OK) {
-                                        lifecycleScope.launch {
-                                            val signInResult = googleAuthUiClient.signInWithIntent(
-                                                intent = result.data ?: return@launch
-                                            )
-                                            viewModel.onSignInResult(signInResult)
-                                        }
-                                    }
-                                }
-                            )
 
-                            //Check for Sign in Validation event is successful
-                            val context = LocalContext.current
-                            LaunchedEffect(key1 = context) {
-                                viewModel.validationEvents.collect { event ->
-                                    when (event) {
-                                        is SignInViewModel.ValidationEvent.Success -> {
-                                            viewModel.updateSignInState()
-
-//                                            Toast.makeText(
-//                                                context,
-//                                                "Registration successful",
-//                                                Toast.LENGTH_LONG
-//                                            ).show()
-
-                                        }
-                                    }
-                                }
-                            }
-                            //Listen if the sign-in process is success or not
-                            LaunchedEffect(key1 = signInState.isSignInSuccessful) {
-                                if (signInState.isSignInSuccessful) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Sign in successful",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-
-                                    navController.navigate("profile")
-                                    viewModel.resetState()
-                                }
-                            }
-
-                            //Sign in screen for the sign_in composable
-                            SignInScreen(
-                                signInState = signInState,
-                                signInFormState = signInFormState,
-                                onClickSignInGoogle = {
-                                    lifecycleScope.launch {
-                                        val signInIntentSender = googleAuthUiClient.signIn()
-                                        launcher.launch(
-                                            IntentSenderRequest.Builder(
-                                                signInIntentSender ?: return@launch
-                                            ).build()
-                                        )
-                                    }
-                                },
-                                viewModel = viewModel,
-                                onClickSignInEmailAndPassword = {
-
-//                                    lifecycleScope.launch {
-//                                        //trigger validation
-                                        viewModel.onEvent(SignInFormEvent.Submit)
-//
-//                                        Log.d(
-//                                            "inside_onClickSignInEmailAndPassword",
-//                                            signInFormState.email.trim()
-//                                        )
-//                                        Log.d(
-//                                            "inside_onClickSignInEmailAndPassword",
-//                                            signInFormState.password.trim()
-//                                        )
-//
-//                                        val signInResult =
-//                                            googleAuthUiClient.signInWithEmailAndPassword(
-//                                                signInFormState.email.trim(),
-//                                                signInFormState.password.trim(),
-////                                                "johndoe@example.com", "test123"
-//                                            )
-//                                        Log.d(
-//                                            "inside_onClickSignInEmailAndPassword",
-//                                            "$signInResult"
-//                                        )
-//                                        viewModel.onSignInResult(signInResult)
-//                                    }
-                                },
-                                onClickDontHaveAccount = { navController.navigate("sign_up") },
-                                onClickForgotPassword = { navController.navigate("forgot_password") }
-                                // TODO: No Forgot password route
-                            )
-                        }
-
-                        //Composable block with profile route
-                        composable("profile") {
-                            ProfileScreen(
-                                userData = googleAuthUiClient.getSignedInUser(),
-                                onSignOut = {
-                                    lifecycleScope.launch {
-                                        googleAuthUiClient.signOut()
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Sign out",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-
-                                        navController.popBackStack()
-                                    }
-                                }
-                            )
-                        }
-
-                        //Composable block of signup route
-                        composable("sign_up") {
-
-//                            val viewModel = viewModel<SignUpViewModel>()
-//                            val state = viewModel.state
-                            val context = LocalContext.current
-
-                            SignUpScreen(
-                                navigateBack = { navController.popBackStack() },
-                            )
-                        }
-
-                    }
                 }
             }
         }
