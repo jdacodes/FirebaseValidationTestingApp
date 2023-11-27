@@ -1,12 +1,15 @@
 package com.jdacodes.firebaseapp.feature_auth.domain.use_case
 
+import com.jdacodes.firebaseapp.core.Constants.PASSWORD_LETTER_DIGIT_ERROR_MESSAGE
+import com.jdacodes.firebaseapp.core.Constants.PASSWORD_MINIMUM_CHARACTER_ERROR_MESSAGE
+
 
 class ValidatePassword {
     fun execute(password: String): ValidationSignInResult {
-        if(password.length < 7) {
+        if(password.length < 8) {
             return ValidationSignInResult(
                 successful = false,
-                errorMessage = "The password needs to consist of at least 7 characters"
+                errorMessage = PASSWORD_MINIMUM_CHARACTER_ERROR_MESSAGE
             )
         }
         val containsLettersAndDigits = password.any { it.isDigit() } &&
@@ -14,7 +17,7 @@ class ValidatePassword {
         if(!containsLettersAndDigits) {
             return ValidationSignInResult(
                 successful = false,
-                errorMessage = "The password needs to contain at least one letter and digit"
+                errorMessage = PASSWORD_LETTER_DIGIT_ERROR_MESSAGE
             )
         }
         return ValidationSignInResult(

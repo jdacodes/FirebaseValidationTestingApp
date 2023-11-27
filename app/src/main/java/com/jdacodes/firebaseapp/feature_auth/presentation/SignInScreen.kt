@@ -1,6 +1,7 @@
 package com.jdacodes.firebaseapp.feature_auth.presentation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -40,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,10 +52,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.createFontFamilyResolver
+import androidx.compose.ui.text.googlefonts.isAvailableOnDevice
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -62,6 +67,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jdacodes.firebaseapp.R
+import com.jdacodes.firebaseapp.core.Constants.FONT_FAILURE_MESSAGE
+import com.jdacodes.firebaseapp.core.Constants.FONT_SUCCESSFUL_MESSAGE
+import com.jdacodes.firebaseapp.ui.theme.fontFamily
+import com.jdacodes.firebaseapp.ui.theme.provider
+import kotlinx.coroutines.CoroutineExceptionHandler
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,6 +85,7 @@ fun SignInScreen(
     onClickForgotPassword: () -> Unit,
     viewModel: SignInViewModel
 ) {
+    val TAG = "SignInScreen"
     val context = LocalContext.current
 
     val usernameState = signInFormState.email
@@ -83,83 +94,97 @@ fun SignInScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(key1 = signInState.signInError) {
-        signInState.signInError?.let { error ->
-            Toast.makeText(
-                context,
-                error,
-                Toast.LENGTH_LONG
-            ).show()
-        }
+    val handler = CoroutineExceptionHandler { _, throwable ->
+        // process the Throwable
+        Log.e(TAG, FONT_FAILURE_MESSAGE, throwable)
     }
-
-    Scaffold(
-        topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-            ) {
-                Column(
-                    Modifier
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Text(
-                        text = "Sign In",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Sign In to continue",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Light,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+    CompositionLocalProvider(
+        LocalFontFamilyResolver provides createFontFamilyResolver(LocalContext.current, handler)
     ) {
-        SignInScreenContent(
-            usernameState = usernameState,
-            passwordState = passwordState,
-            rememberMeState = rememberMeState,
-            signInState = signInState,
-            signInFormState = signInFormState,
-            onUserNameTextChange = {
+
+        LaunchedEffect(Unit) {
+            if (provider.isAvailableOnDevice(context)) {
+                Log.d(TAG, FONT_SUCCESSFUL_MESSAGE)
+            }
+        }
+
+        LaunchedEffect(key1 = signInState.signInError) {
+            signInState.signInError?.let { error ->
+                Toast.makeText(
+                    context,
+                    error,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+        Scaffold(
+            topBar = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.background)
+                ) {
+                    Column(
+                        Modifier
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        Text(
+                            text = "Sign In",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Text(
+                            text = "Sign In to continue",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Light,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+
+            },
+            snackbarHost = { SnackbarHost(snackbarHostState) }
+        ) {
+            SignInScreenContent(
+                usernameState = usernameState,
+                passwordState = passwordState,
+                rememberMeState = rememberMeState,
+                signInState = signInState,
+                signInFormState = signInFormState,
+                onUserNameTextChange = {
 //                viewModel.setUsername(it)
-                viewModel.onEvent(SignInFormEvent.EmailChanged(it))
-            },
-            onPasswordTextChange = {
+                    viewModel.onEvent(SignInFormEvent.EmailChanged(it))
+                },
+                onPasswordTextChange = {
 //                viewModel.setPassword(it)
-                viewModel.onEvent(SignInFormEvent.PasswordChanged(it))
-            },
-            onRememberMeClicked = {
-                viewModel.setRememberMe(it)
-            },
-            onClickForgotPassword = {
-                onClickForgotPassword
-            },
-            onClickDontHaveAccount = onClickDontHaveAccount,
-            onClickSignInGoogle = onClickSignInGoogle,
-            onClickSignInEmailAndPassword = onClickSignInEmailAndPassword,
-            onAuthComplete = { result ->
-                viewModel.onSignInResult(result = result)
+                    viewModel.onEvent(SignInFormEvent.PasswordChanged(it))
+                },
+                onRememberMeClicked = {
+                    viewModel.setRememberMe(it)
+                },
+                onClickForgotPassword = {
+                    onClickForgotPassword
+                },
+                onClickDontHaveAccount = onClickDontHaveAccount,
+                onClickSignInGoogle = onClickSignInGoogle,
+                onClickSignInEmailAndPassword = onClickSignInEmailAndPassword,
+                onAuthComplete = { result ->
+                    viewModel.onSignInResult(result = result)
 //                    Toast.makeText(context, "It works!", Toast.LENGTH_SHORT).show()
 
-            },
-            onAuthError = { result ->
-                viewModel.onSignInResult(result = result)
-                Toast.makeText(context, "Try again later", Toast.LENGTH_SHORT)
-                    .show()
+                },
+                onAuthError = { result ->
+                    viewModel.onSignInResult(result = result)
+                    Toast.makeText(context, "Try again later", Toast.LENGTH_SHORT)
+                        .show()
 
-            },
-        )
+                },
+            )
+        }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -193,6 +218,7 @@ private fun SignInScreenContent(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
             cursorColor = MaterialTheme.colorScheme.primary,
+            errorBorderColor = MaterialTheme.colorScheme.error,
             selectionColors = TextSelectionColors(
                 handleColor = MaterialTheme.colorScheme.primary,
                 backgroundColor = MaterialTheme.colorScheme.primary
@@ -227,7 +253,7 @@ private fun SignInScreenContent(
                         Text(
                             text = signInFormState.emailError ?: "",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onError,
+                            color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.End,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -279,7 +305,7 @@ private fun SignInScreenContent(
                         Text(
                             text = signInFormState.passwordError ?: "",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onError,
+                            color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.End,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -304,7 +330,7 @@ private fun SignInScreenContent(
                         Text(
                             text = "Remember me",
                             fontSize = 12.sp,
-//                           fontFamily = workSans,
+                            fontFamily = fontFamily,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                     }
@@ -349,15 +375,16 @@ private fun SignInScreenContent(
                             append(" ")
                             withStyle(
                                 style = SpanStyle(
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary,
                                 )
                             ) {
                                 append("Sign Up")
                             }
                         },
-//                        fontFamily = workSans,
+                        fontFamily = fontFamily,
                         textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }

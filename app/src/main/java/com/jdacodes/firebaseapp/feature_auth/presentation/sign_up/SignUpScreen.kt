@@ -1,6 +1,7 @@
 package com.jdacodes.firebaseapp.feature_auth.presentation.sign_up
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,8 +48,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.createFontFamilyResolver
+import androidx.compose.ui.text.googlefonts.isAvailableOnDevice
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
@@ -56,6 +61,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jdacodes.firebaseapp.core.Constants
 import com.jdacodes.firebaseapp.core.Constants.EMPTY_STRING
 import com.jdacodes.firebaseapp.core.Constants.SIGNUP_SUCCESSFUL_MESSAGE
 import com.jdacodes.firebaseapp.core.Constants.VERIFY_EMAIL_MESSAGE
@@ -66,6 +72,9 @@ import com.jdacodes.firebaseapp.core.util.UIEvents
 import com.jdacodes.firebaseapp.core.util.Utils.Companion.showMessage
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SignUp
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SignUpTopBar
+import com.jdacodes.firebaseapp.ui.theme.fontFamily
+import com.jdacodes.firebaseapp.ui.theme.provider
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.collectLatest
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -75,56 +84,73 @@ fun SignUpScreen(
     navigateBack: () -> Unit,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
+    val TAG = "SignUpScreen"
+    val context = LocalContext.current
+
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val handler = CoroutineExceptionHandler { _, throwable ->
+        // process the Throwable
+        Log.e(TAG, Constants.FONT_FAILURE_MESSAGE, throwable)
+    }
 
     val usernameState = viewModel.usernameState.value
     val passwordState = viewModel.passwordState.value
     val repeatedPasswordState = viewModel.retypedPasswordState.value
     val acceptedTermsState = viewModel.acceptedTermsState.value
 
-    LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is UIEvents.SnackBarEvent -> {
-                    snackbarHostState.showSnackbar(
-                        message = event.message,
-                        duration = SnackbarDuration.Short
-                    )
-                }
+    CompositionLocalProvider(
+        LocalFontFamilyResolver provides createFontFamilyResolver(LocalContext.current, handler)
+    ) {
 
-                else -> {}
+        LaunchedEffect(Unit) {
+            if (provider.isAvailableOnDevice(context)) {
+                Log.d(TAG, Constants.FONT_SUCCESSFUL_MESSAGE)
             }
         }
-    }
+        LaunchedEffect(key1 = true) {
+            viewModel.eventFlow.collectLatest { event ->
+                when (event) {
+                    is UIEvents.SnackBarEvent -> {
+                        snackbarHostState.showSnackbar(
+                            message = event.message,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
 
-    Scaffold(
-        topBar = {
-            SignUpTopBar(navigateBack = navigateBack)
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        content = { padding ->
-            SignUpScreenContent(
-                usernameState = usernameState,
-                passwordState = passwordState,
-                repeatedPasswordState = repeatedPasswordState,
-                acceptedTermsState = acceptedTermsState,
-                onUserNameTextChange = { viewModel.setUsername(it) },
-                onPasswordTextChange = { viewModel.setPassword(it) },
-                onRepeatPasswordTextChange = { viewModel.setRetypedPassword(it) },
-                onAcceptedTermsClicked = { viewModel.setAcceptedTerms(it) },
-                padding = padding,
-                onClickSignUp = {
-                    viewModel.signUpWithEmailAndPassword()
-                },
-                navigateBack = navigateBack,
-                viewModel = viewModel
-
-            )
+                    else -> {}
+                }
+            }
         }
-    )
+
+        Scaffold(
+            topBar = {
+                SignUpTopBar(navigateBack = navigateBack, fontFamily = fontFamily)
+            },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            content = { padding ->
+                SignUpScreenContent(
+                    usernameState = usernameState,
+                    passwordState = passwordState,
+                    repeatedPasswordState = repeatedPasswordState,
+                    acceptedTermsState = acceptedTermsState,
+                    onUserNameTextChange = { viewModel.setUsername(it) },
+                    onPasswordTextChange = { viewModel.setPassword(it) },
+                    onRepeatPasswordTextChange = { viewModel.setRetypedPassword(it) },
+                    onAcceptedTermsClicked = { viewModel.setAcceptedTerms(it) },
+                    padding = padding,
+                    onClickSignUp = {
+                        viewModel.signUpWithEmailAndPassword()
+                    },
+                    navigateBack = navigateBack,
+                    viewModel = viewModel
+
+                )
+            }
+        )
 
 //    SendEmailVerification()
-
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -196,6 +222,7 @@ fun SignUpScreenContent(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
             cursorColor = MaterialTheme.colorScheme.primary,
+            errorBorderColor = MaterialTheme.colorScheme.error,
             selectionColors = TextSelectionColors(
                 handleColor = MaterialTheme.colorScheme.primary,
                 backgroundColor = MaterialTheme.colorScheme.primary
@@ -230,7 +257,7 @@ fun SignUpScreenContent(
                         Text(
                             text = usernameState.error ?: "",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onError,
+                            color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.End,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -282,7 +309,7 @@ fun SignUpScreenContent(
                         Text(
                             text = passwordState.error ?: "",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onError,
+                            color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.End,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -334,7 +361,7 @@ fun SignUpScreenContent(
                         Text(
                             text = repeatedPasswordState.error ?: "",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onError,
+                            color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.End,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -359,7 +386,7 @@ fun SignUpScreenContent(
                         Text(
                             text = "Accepted Terms of Service",
                             fontSize = 12.sp,
-//                           fontFamily = workSans,
+                            fontFamily = fontFamily,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                     }
@@ -368,7 +395,7 @@ fun SignUpScreenContent(
                     Text(
                         text = acceptedTermsState.error ?: "",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onError,
+                        color = MaterialTheme.colorScheme.error,
                         textAlign = TextAlign.End,
                         modifier = Modifier.fillMaxWidth()
                     )

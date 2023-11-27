@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jdacodes.firebaseapp.core.Constants.EMPTY_STRING
 import com.jdacodes.firebaseapp.core.Constants.SIGNUP_FAILURE_MESSAGE
 import com.jdacodes.firebaseapp.core.Constants.SIGNUP_SUCCESSFUL_MESSAGE
 import com.jdacodes.firebaseapp.core.domain.model.CheckFieldState
@@ -107,10 +108,10 @@ class SignUpViewModel @Inject constructor(
     }
 
     private fun resetState() {
-        _usernameState.value = usernameState.value.copy(error = null)
-        _passwordState.value = passwordState.value.copy(error = null)
-        _retypedPasswordState.value = retypedPasswordState.value.copy(error = null)
-        _acceptedTermsState.value = acceptedTermsState.value.copy(error = null)
+        _usernameState.value = usernameState.value.copy(error = null, text = EMPTY_STRING)
+        _passwordState.value = passwordState.value.copy(error = null, text = EMPTY_STRING)
+        _retypedPasswordState.value = retypedPasswordState.value.copy(error = null, text = EMPTY_STRING)
+        _acceptedTermsState.value = acceptedTermsState.value.copy(error = null, checked = false)
     }
 
 }

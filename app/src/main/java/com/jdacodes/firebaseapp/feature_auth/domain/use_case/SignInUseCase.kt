@@ -5,6 +5,7 @@ import com.jdacodes.firebaseapp.core.util.Response
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
 import com.jdacodes.firebaseapp.feature_auth.presentation.SignInResult
 
+//This use case class is currently not used by sign in feature
 class SignInUseCase(
     private val repo: AuthRepository
 ) {

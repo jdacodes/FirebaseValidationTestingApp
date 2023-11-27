@@ -24,4 +24,13 @@ object Constants {
     const val SIGNUP_FAILURE_MESSAGE = "Sign up failure.Please try again"
     const val SIGNIN_SUCCESSFUL_MESSAGE = "Sign in successful! Welcome back"
     const val SIGNIN_FAILURE_MESSAGE = "Sign in failure. Please try again"
+    const val FONT_SUCCESSFUL_MESSAGE = "Provider and Certificates for Font available"
+    const val FONT_FAILURE_MESSAGE = "There has been an issue: "
+    const val EMAIL_BLANK_ERROR_MESSAGE = "The email can't be blank"
+    const val EMAIL_INVALID_ERROR_MESSAGE = "That's not a valid email"
+    const val PASSWORD_MINIMUM_CHARACTER_ERROR_MESSAGE = "The password needs to consist of at least 8 characters"
+    const val PASSWORD_LETTER_DIGIT_ERROR_MESSAGE = "The password needs to contain at least one letter and digit"
+    const val PASSWORD_NOT_MATCH_ERROR_MESSAGE = "The passwords don't match"
+    const val TERMS_NOT_ACCEPTED_ERROR_MESSAGE = "Please accept the terms"
+
 }

@@ -12,15 +12,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jdacodes.firebaseapp.core.components.BackIcon
+import com.jdacodes.firebaseapp.ui.theme.fontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpTopBar(
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    fontFamily: FontFamily?
 ) {
     TopAppBar(title = {
         Box(
@@ -37,7 +40,8 @@ fun SignUpTopBar(
                     text = "Sign Up",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    fontFamily = fontFamily,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = "Sign up to continue",

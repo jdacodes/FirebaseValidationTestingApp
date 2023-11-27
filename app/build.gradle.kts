@@ -83,8 +83,6 @@ dependencies {
     //Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-auth")
-
-
     //Google Play Services
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     //Coil
@@ -95,6 +93,9 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.46")
     kapt("com.google.dagger:hilt-android-compiler:2.45")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    //Downloadable Custom Fonts
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.5.4")
+
 
 }
 
