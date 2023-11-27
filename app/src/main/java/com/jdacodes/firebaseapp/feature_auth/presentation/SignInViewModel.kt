@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jdacodes.firebaseapp.core.Constants.EMPTY_STRING
 import com.jdacodes.firebaseapp.core.Constants.SIGNIN_FAILURE_MESSAGE
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateEmail
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidatePassword
@@ -53,6 +54,19 @@ class SignInViewModel @Inject constructor(
 
     fun resetState() {
         _state.update { SignInState() }
+        if (!_rememberMeState.value) {
+            formState = formState.copy(
+                email = EMPTY_STRING,
+                emailError = null,
+                password = EMPTY_STRING,
+                passwordError = null
+            )
+        }
+        formState = formState.copy(
+            emailError = null,
+            passwordError = null
+        )
+
     }
 
     fun onEvent(event: SignInFormEvent) {

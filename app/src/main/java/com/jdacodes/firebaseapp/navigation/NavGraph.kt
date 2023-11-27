@@ -156,6 +156,11 @@ fun NavGraph(
             SignUpScreen(
                 navigateBack = {
                     navController.popBackStack()
+//                    navController.navigate(Screen.SignInScreen.route) {
+//                        popUpTo(navController.graph.id) {
+//                            inclusive = true
+//                        }
+//                    }
                 }
             )
         }
