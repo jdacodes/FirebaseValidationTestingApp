@@ -4,6 +4,10 @@ object Constants {
     //App
     const val TAG = "AppTag"
 
+    //Menu Items
+    const val SIGN_OUT_ITEM = "Sign out"
+    const val REVOKE_ACCESS_ITEM = "Revoke Access"
+
     //Screens
     const val SIGN_IN_SCREEN = "Sign in"
     const val FORGOT_PASSWORD_SCREEN = "Forgot password"
@@ -13,6 +17,14 @@ object Constants {
 
     //Useful
     const val EMPTY_STRING = ""
+
+    //Texts
+    const val FORGOT_PASSWORD = "Forgot password?"
+    const val NO_ACCOUNT = "No account? Sign up."
+    const val ALREADY_USER = "Already a user? Sign in."
+    const val WELCOME_MESSAGE = "Welcome to our app."
+    const val ALREADY_VERIFIED = "Already verified?"
+    const val SPAM_EMAIL = "If not, please also check the spam folder."
 
     //Messages
     const val VERIFY_EMAIL_MESSAGE = "We've sent you an email with a link to verify the email."
@@ -32,5 +44,9 @@ object Constants {
     const val PASSWORD_LETTER_DIGIT_ERROR_MESSAGE = "The password needs to contain at least one letter and digit"
     const val PASSWORD_NOT_MATCH_ERROR_MESSAGE = "The passwords don't match"
     const val TERMS_NOT_ACCEPTED_ERROR_MESSAGE = "Please accept the terms"
+    const val SIGN_OUT_MESSAGE = "Signing out"
+
+    //Error Messages
+    const val SENSITIVE_OPERATION_MESSAGE = "This operation is sensitive and requires recent authentication. Log in again before retrying this request."
 
 }

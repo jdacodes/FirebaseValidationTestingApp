@@ -43,11 +43,11 @@ fun NavGraph(
             val formState = viewModel.formState
 
             //Check if the user is already signed in
-            LaunchedEffect(key1 = Unit) {
-                if (googleAuthUiClient.getSignedInUser() != null) {
-                    navController.navigate(Screen.ProfileScreen.route)
-                }
-            }
+//            LaunchedEffect(key1 = Unit) {
+//                if (googleAuthUiClient.getSignedInUser() != null) {
+//                    navController.navigate(Screen.ProfileScreen.route)
+//                }
+//            }
 
             //Send the intent we get from intentSender
             val lifecycleScope = LocalLifecycleOwner.current.lifecycleScope
@@ -95,7 +95,7 @@ fun NavGraph(
                         Toast.LENGTH_LONG
                     ).show()
 
-                    navController.navigate(Screen.ProfileScreen.route)
+//                    navController.navigate(Screen.ProfileScreen.route)
                     viewModel.resetState()
                 }
             }
@@ -131,28 +131,30 @@ fun NavGraph(
         composable(
             route = Screen.ProfileScreen.route
         ) {
-            val context = LocalContext.current
-            val lifecycleScope = LocalLifecycleOwner.current.lifecycleScope
-            ProfileScreen(
-                userData = googleAuthUiClient.getSignedInUser(),
-                onSignOut = {
-                    lifecycleScope.launch {
-                        googleAuthUiClient.signOut()
-                        Toast.makeText(
-                            context,
-                            "Sign out",
-                            Toast.LENGTH_LONG
-                        ).show()
-
-                        navController.popBackStack()
-                    }
-                }
-            )
+            ProfileScreen( userData = googleAuthUiClient.getSignedInUser(),)
+//            val context = LocalContext.current
+//            val lifecycleScope = LocalLifecycleOwner.current.lifecycleScope
+//            ProfileScreen(
+//                userData = googleAuthUiClient.getSignedInUser(),
+//                onSignOut = {
+//                    lifecycleScope.launch {
+//                        googleAuthUiClient.signOut()
+//                        Toast.makeText(
+//                            context,
+//                            "Sign out",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+//
+//                        navController.popBackStack()
+//                    }
+//                }
+//            )
         }
 
         composable(
             route = Screen.SignUpScreen.route
         ) {
+            // TODO: Fix issue navigating to profile after successful sign up
             SignUpScreen(
                 navigateBack = {
                     navController.popBackStack()

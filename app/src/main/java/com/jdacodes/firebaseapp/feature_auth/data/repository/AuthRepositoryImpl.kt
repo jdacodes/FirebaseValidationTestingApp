@@ -3,10 +3,18 @@ package com.jdacodes.firebaseapp.feature_auth.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.jdacodes.firebaseapp.core.util.Response
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
+import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthStateResponse
+import com.jdacodes.firebaseapp.feature_auth.domain.repository.ReloadUserResponse
+import com.jdacodes.firebaseapp.feature_auth.domain.repository.RevokeAccessResponse
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.SignInResponse
 import com.jdacodes.firebaseapp.feature_auth.presentation.SignInResult
 import com.jdacodes.firebaseapp.feature_auth.presentation.UserData
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -47,4 +55,29 @@ class AuthRepositoryImpl @Inject constructor(
             errorMessage = e.message
         )
     }
+
+    override suspend fun reloadFirebaseUser() = try {
+        auth.currentUser?.reload()?.await()
+        Response.Success(true)
+    } catch (e: Exception) {
+        Response.Failure(e)
+    }
+
+    override fun signOut() = auth.signOut()
+    override suspend fun revokeAccess() = try {
+        auth.currentUser?.delete()?.await()
+        Response.Success(true)
+    } catch (e: Exception) {
+        Response.Failure(e)
+    }
+
+    override fun getAuthState(viewModelScope: CoroutineScope) = callbackFlow {
+        val authStateListener = FirebaseAuth.AuthStateListener { auth ->
+            trySend(auth.currentUser == null)
+        }
+        auth.addAuthStateListener(authStateListener)
+        awaitClose {
+            auth.removeAuthStateListener(authStateListener)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), auth.currentUser == null)
 }
