@@ -58,9 +58,11 @@ class SignUpUseCase(
             )
         }
 
-
         return ValidationSignUpResult(
             result = repo.firebaseSignUpWithEmailAndPassword(username, password)
         )
     }
+
+    suspend fun sendEmailVerification() = repo.sendEmailVerification()
+
 }

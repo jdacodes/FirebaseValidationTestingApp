@@ -48,6 +48,7 @@ fun ProfileScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
+    // TODO: add downloadable fonts logic 
     Scaffold(
         topBar = {
             TopBar(

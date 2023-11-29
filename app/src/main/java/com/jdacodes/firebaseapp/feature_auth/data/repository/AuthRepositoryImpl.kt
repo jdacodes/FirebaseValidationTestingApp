@@ -1,11 +1,13 @@
 package com.jdacodes.firebaseapp.feature_auth.data.repository
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.jdacodes.firebaseapp.core.util.Response
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthStateResponse
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.ReloadUserResponse
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.RevokeAccessResponse
+import com.jdacodes.firebaseapp.feature_auth.domain.repository.SendEmailVerificationResponse
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.SignInResponse
 import com.jdacodes.firebaseapp.feature_auth.presentation.SignInResult
 import com.jdacodes.firebaseapp.feature_auth.presentation.UserData
@@ -80,4 +82,15 @@ class AuthRepositoryImpl @Inject constructor(
             auth.removeAuthStateListener(authStateListener)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), auth.currentUser == null)
+
+    override suspend fun sendEmailVerification() = try {
+        auth.currentUser?.sendEmailVerification()?.await()
+        Log.d("sendEmailVerification", "Email sent.")
+        Response.Success(true)
+
+
+    } catch (e: Exception) {
+        Log.d("sendEmailVerification", "Email not sent.")
+        Response.Failure(e)
+    }
 }

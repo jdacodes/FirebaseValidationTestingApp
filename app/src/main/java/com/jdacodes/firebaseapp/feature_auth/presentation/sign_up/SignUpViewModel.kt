@@ -1,5 +1,6 @@
 package com.jdacodes.firebaseapp.feature_auth.presentation.sign_up
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +14,7 @@ import com.jdacodes.firebaseapp.core.domain.model.CheckFieldState
 import com.jdacodes.firebaseapp.core.domain.model.TextFieldState
 import com.jdacodes.firebaseapp.core.util.Response
 import com.jdacodes.firebaseapp.core.util.UIEvents
+import com.jdacodes.firebaseapp.feature_auth.domain.repository.SendEmailVerificationResponse
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.SignUpResponse
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.SignUpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +29,13 @@ class SignUpViewModel @Inject constructor(
 ) : ViewModel() {
 
     var signUpResponse by mutableStateOf<SignUpResponse>(Response.Success(false))
+        private set
+
+    var sendEmailVerificationResponse by mutableStateOf<SendEmailVerificationResponse>(
+        Response.Success(
+            false
+        )
+    )
         private set
 
     private val _usernameState = mutableStateOf(TextFieldState(text = ""))
@@ -67,7 +76,7 @@ class SignUpViewModel @Inject constructor(
 
         )
 
-        signUpResponse = Response.notLoading
+//        signUpResponse = Response.notLoading
 
         if (signUpResult.usernameError != null) {
             _usernameState.value = usernameState.value.copy(error = signUpResult.usernameError)
@@ -78,18 +87,21 @@ class SignUpViewModel @Inject constructor(
         }
 
         if (signUpResult.retypedPasswordError != null) {
-            _retypedPasswordState.value = retypedPasswordState.value.copy(error = signUpResult.retypedPasswordError)
+            _retypedPasswordState.value =
+                retypedPasswordState.value.copy(error = signUpResult.retypedPasswordError)
         }
 
         if (signUpResult.retypedPasswordError != null) {
-            _retypedPasswordState.value = retypedPasswordState.value.copy(error = signUpResult.retypedPasswordError)
+            _retypedPasswordState.value =
+                retypedPasswordState.value.copy(error = signUpResult.retypedPasswordError)
         }
 
         if (signUpResult.acceptedTermsError != null) {
-            _acceptedTermsState.value =  acceptedTermsState.value.copy(error = signUpResult.acceptedTermsError)
+            _acceptedTermsState.value =
+                acceptedTermsState.value.copy(error = signUpResult.acceptedTermsError)
         }
 
-        when(signUpResult.result){
+        when (signUpResult.result) {
             is Response.Success -> {
                 resetState()
                 _eventFlow.emit(
@@ -98,19 +110,29 @@ class SignUpViewModel @Inject constructor(
                     )
                 )
             }
+
             is Response.Failure -> {
                 UIEvents.SnackBarEvent(
                     SIGNUP_FAILURE_MESSAGE
                 )
             }
+
             else -> {}
         }
+    }
+
+    fun sendEmailVerification() = viewModelScope.launch {
+        sendEmailVerificationResponse = Response.Loading
+        sendEmailVerificationResponse = signUpUseCase.sendEmailVerification()
+        Log.d("sendEmailVerification", "Email sent.")
+
     }
 
     private fun resetState() {
         _usernameState.value = usernameState.value.copy(error = null, text = EMPTY_STRING)
         _passwordState.value = passwordState.value.copy(error = null, text = EMPTY_STRING)
-        _retypedPasswordState.value = retypedPasswordState.value.copy(error = null, text = EMPTY_STRING)
+        _retypedPasswordState.value =
+            retypedPasswordState.value.copy(error = null, text = EMPTY_STRING)
         _acceptedTermsState.value = acceptedTermsState.value.copy(error = null, checked = false)
     }
 

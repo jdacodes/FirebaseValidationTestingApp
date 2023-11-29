@@ -70,6 +70,7 @@ import com.jdacodes.firebaseapp.core.domain.model.TextFieldState
 import com.jdacodes.firebaseapp.core.util.Response
 import com.jdacodes.firebaseapp.core.util.UIEvents
 import com.jdacodes.firebaseapp.core.util.Utils.Companion.showMessage
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SendEmailVerification
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SignUp
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SignUpTopBar
 import com.jdacodes.firebaseapp.ui.theme.fontFamily
@@ -148,8 +149,15 @@ fun SignUpScreen(
                 )
             }
         )
-
-//    SendEmailVerification()
+        SignUp(
+            sendEmailVerification = {
+                viewModel.sendEmailVerification()
+            },
+            showVerifyEmailMessage = {
+                showMessage(context, VERIFY_EMAIL_MESSAGE)
+            }
+        )
+        SendEmailVerification()
     }
 }
 
@@ -434,14 +442,14 @@ fun SignUpScreenContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    SignUp(
-                        sendEmailVerification = {
-//            viewModel.sendEmailVerification()
-                        },
-                        showVerifyEmailMessage = {
-                            showMessage(context, SIGNUP_SUCCESSFUL_MESSAGE)
-                        }
-                    )
+//                    SignUp(
+//                        sendEmailVerification = {
+//                            viewModel.sendEmailVerification()
+//                        },
+//                        showVerifyEmailMessage = {
+//                            showMessage(context, VERIFY_EMAIL_MESSAGE)
+//                        }
+//                    )
                 }
             }
         }

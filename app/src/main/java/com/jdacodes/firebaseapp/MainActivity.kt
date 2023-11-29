@@ -58,12 +58,11 @@ class MainActivity : ComponentActivity() {
         if (isUserSignedOut) {
             NavigateToSignInScreen()
         } else {
-            // TODO: Uncomment email verification and profile navigation screen logic
-//            if (viewModel.isEmailVerified) {
+            if (viewModel.isEmailVerified) {
                 NavigateToProfileScreen()
-//            } else {
-//                NavigateToVerifyEmailScreen()
-//            }
+            } else {
+                NavigateToVerifyEmailScreen()
+            }
         }
     }
 

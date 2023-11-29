@@ -22,6 +22,7 @@ import com.jdacodes.firebaseapp.feature_auth.presentation.SignInFormEvent
 import com.jdacodes.firebaseapp.feature_auth.presentation.SignInScreen
 import com.jdacodes.firebaseapp.feature_auth.presentation.SignInViewModel
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpScreen
+import com.jdacodes.firebaseapp.feature_auth.presentation.verify_email.VerifyEmailScreen
 import com.jdacodes.firebaseapp.profile.ProfileScreen
 import kotlinx.coroutines.launch
 
@@ -131,7 +132,7 @@ fun NavGraph(
         composable(
             route = Screen.ProfileScreen.route
         ) {
-            ProfileScreen( userData = googleAuthUiClient.getSignedInUser(),)
+            ProfileScreen(userData = googleAuthUiClient.getSignedInUser())
 //            val context = LocalContext.current
 //            val lifecycleScope = LocalLifecycleOwner.current.lifecycleScope
 //            ProfileScreen(
@@ -163,6 +164,21 @@ fun NavGraph(
 //                            inclusive = true
 //                        }
 //                    }
+                }
+            )
+        }
+
+        composable(
+            route = Screen.VerifyEmailScreen.route
+        ) {
+            VerifyEmailScreen(
+                navigateToProfileScreen = {
+                    navController.navigate(Screen.ProfileScreen.route) {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    }
+
                 }
             )
         }

@@ -11,14 +11,16 @@ typealias SignInResponse = Response<Boolean>
 typealias AuthStateResponse = StateFlow<Boolean>
 typealias RevokeAccessResponse = Response<Boolean>
 typealias ReloadUserResponse = Response<Boolean>
+typealias SendEmailVerificationResponse = Response<Boolean>
 interface AuthRepository {
     val currentUser: FirebaseUser?
 
     suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String): SignUpResponse
     suspend fun firebaseSignInWithEmailAndPassword(email: String, password: String): SignInResult
-
     suspend fun reloadFirebaseUser(): ReloadUserResponse
     fun signOut()
     suspend fun revokeAccess(): RevokeAccessResponse
     fun getAuthState(viewModelScope: CoroutineScope): AuthStateResponse
+
+    suspend fun sendEmailVerification(): SendEmailVerificationResponse
 }
