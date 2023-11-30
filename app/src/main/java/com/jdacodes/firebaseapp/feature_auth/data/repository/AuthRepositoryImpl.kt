@@ -2,15 +2,12 @@ package com.jdacodes.firebaseapp.feature_auth.data.repository
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.jdacodes.firebaseapp.core.util.Response
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
-import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthStateResponse
-import com.jdacodes.firebaseapp.feature_auth.domain.repository.ReloadUserResponse
-import com.jdacodes.firebaseapp.feature_auth.domain.repository.RevokeAccessResponse
-import com.jdacodes.firebaseapp.feature_auth.domain.repository.SendEmailVerificationResponse
-import com.jdacodes.firebaseapp.feature_auth.domain.repository.SignInResponse
-import com.jdacodes.firebaseapp.feature_auth.presentation.SignInResult
-import com.jdacodes.firebaseapp.feature_auth.presentation.UserData
+import com.jdacodes.firebaseapp.feature_auth.domain.repository.SendPasswordResetEmailResponse
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInResult
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.UserData
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
@@ -74,7 +71,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override fun getAuthState(viewModelScope: CoroutineScope) = callbackFlow {
-        val authStateListener = FirebaseAuth.AuthStateListener { auth ->
+        val authStateListener = AuthStateListener { auth ->
             trySend(auth.currentUser == null)
         }
         auth.addAuthStateListener(authStateListener)
@@ -91,6 +88,13 @@ class AuthRepositoryImpl @Inject constructor(
 
     } catch (e: Exception) {
         Log.d("sendEmailVerification", "Email not sent.")
+        Response.Failure(e)
+    }
+
+    override suspend fun sendPasswordResetEmail(email: String) = try {
+        auth.sendPasswordResetEmail(email).await()
+        Response.Success(true)
+    } catch (e: Exception) {
         Response.Failure(e)
     }
 }

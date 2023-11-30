@@ -17,10 +17,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.jdacodes.firebaseapp.core.Constants
-import com.jdacodes.firebaseapp.feature_auth.presentation.GoogleAuthUiClient
-import com.jdacodes.firebaseapp.feature_auth.presentation.SignInFormEvent
-import com.jdacodes.firebaseapp.feature_auth.presentation.SignInScreen
-import com.jdacodes.firebaseapp.feature_auth.presentation.SignInViewModel
+import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordScreen
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.GoogleAuthUiClient
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInFormEvent
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInScreen
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInViewModel
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpScreen
 import com.jdacodes.firebaseapp.feature_auth.presentation.verify_email.VerifyEmailScreen
 import com.jdacodes.firebaseapp.profile.ProfileScreen
@@ -182,5 +183,16 @@ fun NavGraph(
                 }
             )
         }
+
+        composable(
+            route = Screen.ForgotPasswordScreen.route
+        ) {
+            ForgotPasswordScreen(
+                navigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
     }
 }

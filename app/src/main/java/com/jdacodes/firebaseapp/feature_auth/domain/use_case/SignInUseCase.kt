@@ -1,9 +1,8 @@
 package com.jdacodes.firebaseapp.feature_auth.domain.use_case
 
 import android.util.Patterns
-import com.jdacodes.firebaseapp.core.util.Response
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
-import com.jdacodes.firebaseapp.feature_auth.presentation.SignInResult
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInResult
 
 //This use case class is currently not used by sign in feature
 class SignInUseCase(

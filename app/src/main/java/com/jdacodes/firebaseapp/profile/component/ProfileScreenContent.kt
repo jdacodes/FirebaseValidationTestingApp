@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.jdacodes.firebaseapp.core.Constants.WELCOME_MESSAGE
-import com.jdacodes.firebaseapp.feature_auth.presentation.UserData
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.UserData
 
 @Composable
 fun ProfileScreenContent(

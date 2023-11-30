@@ -1,7 +1,5 @@
 package com.jdacodes.firebaseapp.feature_auth.presentation.sign_up
 
-import com.jdacodes.firebaseapp.feature_auth.presentation.UserData
-
 
 data class SignUpResult(
     val data: UserSignUpData?,

@@ -1,4 +1,4 @@
-package com.jdacodes.firebaseapp.feature_auth.presentation
+package com.jdacodes.firebaseapp.feature_auth.presentation.sign_in
 
 data class SignInFormState(
     val email: String = "",

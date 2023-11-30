@@ -79,7 +79,7 @@ dependencies {
     implementation("com.facebook.android:facebook-android-sdk:16.0.0")
     //Firebase BOM
     // Import the BoM for the Firebase platform
-    implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
+    implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
     //Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-auth")

@@ -1,4 +1,4 @@
-package com.jdacodes.firebaseapp.feature_auth.presentation
+package com.jdacodes.firebaseapp.feature_auth.presentation.sign_in
 
 import android.content.Context
 import android.content.Intent

@@ -1,4 +1,4 @@
-package com.jdacodes.firebaseapp.feature_auth.presentation
+package com.jdacodes.firebaseapp.feature_auth.presentation.sign_in
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -30,7 +30,6 @@ class SignInViewModel @Inject constructor(
 
     var formState by mutableStateOf(SignInFormState())
 
-    // TODO: Implement remember me functionality for sign in screen
     private val _rememberMeState = mutableStateOf(false)
     val rememberMeState: State<Boolean> = _rememberMeState
 

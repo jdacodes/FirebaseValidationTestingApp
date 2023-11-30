@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.identity.Identity
-import com.jdacodes.firebaseapp.feature_auth.presentation.GoogleAuthUiClient
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.GoogleAuthUiClient
 import com.jdacodes.firebaseapp.navigation.NavGraph
 import com.jdacodes.firebaseapp.navigation.Screen
 import com.jdacodes.firebaseapp.ui.theme.FirebaseAppTheme
@@ -58,11 +58,12 @@ class MainActivity : ComponentActivity() {
         if (isUserSignedOut) {
             NavigateToSignInScreen()
         } else {
-            if (viewModel.isEmailVerified) {
+            // Firebase is not sending Email Verification link!, verification is disabled for now
+//            if (viewModel.isEmailVerified) {
                 NavigateToProfileScreen()
-            } else {
-                NavigateToVerifyEmailScreen()
-            }
+//            } else {
+//                NavigateToVerifyEmailScreen()
+//            }
         }
     }
 

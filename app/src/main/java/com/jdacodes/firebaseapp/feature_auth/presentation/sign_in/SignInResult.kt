@@ -1,4 +1,4 @@
-package com.jdacodes.firebaseapp.feature_auth.presentation
+package com.jdacodes.firebaseapp.feature_auth.presentation.sign_in
 
 data class SignInResult(
     val data: UserData?,

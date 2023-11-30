@@ -1,4 +1,4 @@
-package com.jdacodes.firebaseapp.feature_auth.presentation
+package com.jdacodes.firebaseapp.feature_auth.presentation.sign_in
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.sp
 import com.jdacodes.firebaseapp.R
 import com.jdacodes.firebaseapp.core.Constants.FONT_FAILURE_MESSAGE
 import com.jdacodes.firebaseapp.core.Constants.FONT_SUCCESSFUL_MESSAGE
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.components.FacebookButton
 import com.jdacodes.firebaseapp.ui.theme.fontFamily
 import com.jdacodes.firebaseapp.ui.theme.provider
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -165,9 +166,9 @@ fun SignInScreen(
                 onRememberMeClicked = {
                     viewModel.setRememberMe(it)
                 },
-                onClickForgotPassword = {
+                onClickForgotPassword =
                     onClickForgotPassword
-                },
+                ,
                 onClickDontHaveAccount = onClickDontHaveAccount,
                 onClickSignInGoogle = onClickSignInGoogle,
                 onClickSignInEmailAndPassword = onClickSignInEmailAndPassword,

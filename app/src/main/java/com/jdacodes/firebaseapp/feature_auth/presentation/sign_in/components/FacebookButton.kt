@@ -1,4 +1,4 @@
-package com.jdacodes.firebaseapp.feature_auth.presentation
+package com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.components
 
 import android.net.Uri
 import android.util.Log
@@ -25,6 +25,8 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.jdacodes.firebaseapp.R
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInResult
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.UserData
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 

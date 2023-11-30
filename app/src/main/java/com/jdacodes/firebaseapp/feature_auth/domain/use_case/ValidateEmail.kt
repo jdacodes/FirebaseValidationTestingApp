@@ -4,7 +4,7 @@ import android.util.Patterns
 import com.jdacodes.firebaseapp.core.Constants.EMAIL_BLANK_ERROR_MESSAGE
 import com.jdacodes.firebaseapp.core.Constants.EMAIL_INVALID_ERROR_MESSAGE
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
-import com.jdacodes.firebaseapp.feature_auth.presentation.SignInResult
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInResult
 
 
 class ValidateEmail(private val repo: AuthRepository) {
