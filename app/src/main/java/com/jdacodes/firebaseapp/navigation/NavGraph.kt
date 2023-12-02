@@ -17,7 +17,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.jdacodes.firebaseapp.core.Constants
+import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordFormEvent
 import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordScreen
+import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordViewModel
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.GoogleAuthUiClient
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInFormEvent
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInScreen
@@ -43,13 +45,6 @@ fun NavGraph(
             val viewModel: SignInViewModel = hiltViewModel()
             val signInState by viewModel.state.collectAsStateWithLifecycle()
             val formState = viewModel.formState
-
-            //Check if the user is already signed in
-//            LaunchedEffect(key1 = Unit) {
-//                if (googleAuthUiClient.getSignedInUser() != null) {
-//                    navController.navigate(Screen.ProfileScreen.route)
-//                }
-//            }
 
             //Send the intent we get from intentSender
             val lifecycleScope = LocalLifecycleOwner.current.lifecycleScope
@@ -126,7 +121,6 @@ fun NavGraph(
                 onClickForgotPassword = {
                     navController.navigate(Screen.ForgotPasswordScreen.route)
                 }
-                // TODO: No Forgot password route
             )
         }
 
@@ -134,23 +128,6 @@ fun NavGraph(
             route = Screen.ProfileScreen.route
         ) {
             ProfileScreen(userData = googleAuthUiClient.getSignedInUser())
-//            val context = LocalContext.current
-//            val lifecycleScope = LocalLifecycleOwner.current.lifecycleScope
-//            ProfileScreen(
-//                userData = googleAuthUiClient.getSignedInUser(),
-//                onSignOut = {
-//                    lifecycleScope.launch {
-//                        googleAuthUiClient.signOut()
-//                        Toast.makeText(
-//                            context,
-//                            "Sign out",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-//
-//                        navController.popBackStack()
-//                    }
-//                }
-//            )
         }
 
         composable(
@@ -187,10 +164,15 @@ fun NavGraph(
         composable(
             route = Screen.ForgotPasswordScreen.route
         ) {
+            val viewModel: ForgotPasswordViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val formState = viewModel.formState
             ForgotPasswordScreen(
                 navigateBack = {
                     navController.popBackStack()
-                }
+                },
+                state = state,
+                formState = formState
             )
         }
 

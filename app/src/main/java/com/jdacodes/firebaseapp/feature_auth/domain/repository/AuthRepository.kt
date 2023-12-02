@@ -2,6 +2,7 @@ package com.jdacodes.firebaseapp.feature_auth.domain.repository
 
 import com.google.firebase.auth.FirebaseUser
 import com.jdacodes.firebaseapp.core.util.Response
+import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordResult
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -24,5 +25,6 @@ interface AuthRepository {
     fun getAuthState(viewModelScope: CoroutineScope): AuthStateResponse
     suspend fun sendEmailVerification(): SendEmailVerificationResponse
 
-    suspend fun sendPasswordResetEmail(email: String): SendPasswordResetEmailResponse
+//    suspend fun sendPasswordResetEmail(email: String): SendPasswordResetEmailResponse
+    suspend fun sendPasswordResetEmail(email: String): ForgotPasswordResult
 }
