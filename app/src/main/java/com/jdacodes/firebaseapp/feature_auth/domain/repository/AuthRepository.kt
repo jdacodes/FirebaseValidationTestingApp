@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.jdacodes.firebaseapp.core.util.Response
 import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordResult
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInResult
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
@@ -17,7 +18,8 @@ typealias SendPasswordResetEmailResponse = Response<Boolean>
 interface AuthRepository {
     val currentUser: FirebaseUser?
 
-    suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String): SignUpResponse
+//    suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String): SignUpResponse
+    suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String): SignUpResult
     suspend fun firebaseSignInWithEmailAndPassword(email: String, password: String): SignInResult
     suspend fun reloadFirebaseUser(): ReloadUserResponse
     fun signOut()

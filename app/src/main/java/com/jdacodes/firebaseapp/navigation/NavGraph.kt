@@ -25,6 +25,7 @@ import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInFormEven
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInScreen
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInViewModel
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpScreen
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpViewModel
 import com.jdacodes.firebaseapp.feature_auth.presentation.verify_email.VerifyEmailScreen
 import com.jdacodes.firebaseapp.profile.ProfileScreen
 import kotlinx.coroutines.launch
@@ -133,6 +134,42 @@ fun NavGraph(
         composable(
             route = Screen.SignUpScreen.route
         ) {
+            val viewModel: SignUpViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val formState = viewModel.formState
+
+//            val context = LocalContext.current
+//            LaunchedEffect(key1 = context) {
+//                viewModel.validationEvents.collect { event ->
+//                    when (event) {
+//                        is SignUpViewModel.ValidationEvent.Success -> {
+//                            viewModel.updateSignUpState()
+
+//                                            Toast.makeText(
+//                                                context,
+//                                                "Registration successful",
+//                                                Toast.LENGTH_LONG
+//                                            ).show()
+
+//                        }
+//
+//                        else -> {}
+//                    }
+//                }
+//            }
+
+//            LaunchedEffect(key1 = state.isSignUpSuccessful) {
+//                if (state.isSignUpSuccessful) {
+//                    Toast.makeText(
+//                        context,
+//                        Constants.SIGNUP_SUCCESSFUL_MESSAGE,
+//                        Toast.LENGTH_LONG
+//                    ).show()
+
+//                    navController.navigate(Screen.ProfileScreen.route)
+//                    viewModel.resetState()
+//                }
+//            }
             // TODO: Fix issue navigating to profile after successful sign up
             SignUpScreen(
                 navigateBack = {
@@ -142,7 +179,9 @@ fun NavGraph(
 //                            inclusive = true
 //                        }
 //                    }
-                }
+                },
+                state = state,
+                formState = formState
             )
         }
 

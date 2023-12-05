@@ -9,5 +9,4 @@ data class SignUpFormState(
     val repeatedPasswordError: String? = null,
     val acceptedTerms: Boolean = false,
     val termsError: String? = null,
-    val isLoading: Boolean = false
 )

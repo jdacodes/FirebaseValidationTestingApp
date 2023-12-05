@@ -2,6 +2,7 @@ package com.jdacodes.firebaseapp.feature_auth.presentation.sign_up
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +43,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -70,6 +72,8 @@ import com.jdacodes.firebaseapp.core.domain.model.TextFieldState
 import com.jdacodes.firebaseapp.core.util.Response
 import com.jdacodes.firebaseapp.core.util.UIEvents
 import com.jdacodes.firebaseapp.core.util.Utils.Companion.showMessage
+import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordFormState
+import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordState
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SendEmailVerification
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SignUp
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SignUpTopBar
@@ -83,22 +87,31 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun SignUpScreen(
     navigateBack: () -> Unit,
-    viewModel: SignUpViewModel = hiltViewModel()
+    viewModel: SignUpViewModel = hiltViewModel(),
+    state: SignUpState,
+    formState: SignUpFormState
 ) {
     val TAG = "SignUpScreen"
     val context = LocalContext.current
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
 
     val handler = CoroutineExceptionHandler { _, throwable ->
         // process the Throwable
         Log.e(TAG, Constants.FONT_FAILURE_MESSAGE, throwable)
     }
 
-    val usernameState = viewModel.usernameState.value
-    val passwordState = viewModel.passwordState.value
-    val repeatedPasswordState = viewModel.retypedPasswordState.value
-    val acceptedTermsState = viewModel.acceptedTermsState.value
+//    val usernameState = viewModel.usernameState.value
+//    val passwordState = viewModel.passwordState.value
+//    val repeatedPasswordState = viewModel.retypedPasswordState.value
+//    val acceptedTermsState = viewModel.acceptedTermsState.value
+
+    val usernameState = viewModel.formState.email
+    val passwordState = viewModel.formState.password
+    val repeatedPasswordState = viewModel.formState.repeatedPassword
+    val acceptedTermsState = viewModel.formState.acceptedTerms
 
     CompositionLocalProvider(
         LocalFontFamilyResolver provides createFontFamilyResolver(LocalContext.current, handler)
@@ -109,21 +122,30 @@ fun SignUpScreen(
                 Log.d(TAG, Constants.FONT_SUCCESSFUL_MESSAGE)
             }
         }
-        LaunchedEffect(key1 = true) {
-            viewModel.eventFlow.collectLatest { event ->
-                when (event) {
-                    is UIEvents.SnackBarEvent -> {
-                        snackbarHostState.showSnackbar(
-                            message = event.message,
-                            duration = SnackbarDuration.Short
-                        )
-                    }
+//        LaunchedEffect(key1 = true) {
+//            viewModel.eventFlow.collectLatest { event ->
+//                when (event) {
+//                    is UIEvents.SnackBarEvent -> {
+//                        snackbarHostState.showSnackbar(
+//                            message = event.message,
+//                            duration = SnackbarDuration.Short
+//                        )
+//                    }
+//
+//                    else -> {}
+//                }
+//            }
+//        }
 
-                    else -> {}
-                }
+        LaunchedEffect(key1 = state.signUpError) {
+            state.signUpError?.let { error ->
+                Toast.makeText(
+                    context,
+                    error,
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
-
         Scaffold(
             topBar = {
                 SignUpTopBar(navigateBack = navigateBack, fontFamily = fontFamily)
@@ -135,28 +157,30 @@ fun SignUpScreen(
                     passwordState = passwordState,
                     repeatedPasswordState = repeatedPasswordState,
                     acceptedTermsState = acceptedTermsState,
-                    onUserNameTextChange = { viewModel.setUsername(it) },
-                    onPasswordTextChange = { viewModel.setPassword(it) },
-                    onRepeatPasswordTextChange = { viewModel.setRetypedPassword(it) },
-                    onAcceptedTermsClicked = { viewModel.setAcceptedTerms(it) },
+                    onUserNameTextChange = { viewModel.onEvent(SignUpFormEvent.EmailChanged(it)) },
+                    onPasswordTextChange = { viewModel.onEvent(SignUpFormEvent.PasswordChanged(it)) },
+                    onRepeatPasswordTextChange = { viewModel.onEvent(SignUpFormEvent.RepeatedPasswordChanged(it)) },
+                    onAcceptedTermsClicked = { viewModel.onEvent(SignUpFormEvent.AcceptTerms(it)) },
                     padding = padding,
                     onClickSignUp = {
-                        viewModel.signUpWithEmailAndPassword()
+                        viewModel.onEvent(SignUpFormEvent.Submit)
                     },
                     navigateBack = navigateBack,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    state = state,
+                    formState = formState
 
                 )
             }
         )
-        SignUp(
-            sendEmailVerification = {
-                viewModel.sendEmailVerification()
-            },
-            showVerifyEmailMessage = {
-                showMessage(context, VERIFY_EMAIL_MESSAGE)
-            }
-        )
+//        SignUp(
+//            sendEmailVerification = {
+//                viewModel.sendEmailVerification()
+//            },
+//            showVerifyEmailMessage = {
+//                showMessage(context, VERIFY_EMAIL_MESSAGE)
+//            }
+//        )
         SendEmailVerification()
     }
 }
@@ -164,15 +188,21 @@ fun SignUpScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SignUpScreenContent(
-    usernameState: TextFieldState,
-    passwordState: TextFieldState,
-    repeatedPasswordState: TextFieldState,
-    acceptedTermsState: CheckFieldState,
+//    usernameState: TextFieldState,
+//    passwordState: TextFieldState,
+//    repeatedPasswordState: TextFieldState,
+//    acceptedTermsState: CheckFieldState,
+    usernameState: String,
+    passwordState: String,
+    repeatedPasswordState: String,
+    acceptedTermsState: Boolean,
     onUserNameTextChange: (String) -> Unit,
     onPasswordTextChange: (String) -> Unit,
     onRepeatPasswordTextChange: (String) -> Unit,
     onAcceptedTermsClicked: (Boolean) -> Unit,
     onClickSignUp: () -> Unit,
+    state: SignUpState,
+    formState: SignUpFormState,
     padding: PaddingValues,
     navigateBack: () -> Unit,
     viewModel: SignUpViewModel
@@ -243,7 +273,8 @@ fun SignUpScreenContent(
                 Column {
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = usernameState.text,
+//                        value = usernameState.text,
+                        value = usernameState,
                         onValueChange = {
                             onUserNameTextChange(it)
                         },
@@ -258,12 +289,15 @@ fun SignUpScreenContent(
                         ),
                         maxLines = 1,
                         singleLine = true,
-                        isError = usernameState.error != null,
+//                        isError = usernameState.error != null,
+                        isError = formState.emailError != null,
                         colors = outlineTextFieldColors
                     )
-                    if (usernameState.error != null) {
+//                    if (usernameState.error != null) {
+                    if (formState.emailError != null) {
                         Text(
-                            text = usernameState.error ?: "",
+//                            text = usernameState.error ?: "",
+                            text = formState.emailError ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.End,
@@ -280,7 +314,7 @@ fun SignUpScreenContent(
                 Column {
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = passwordState.text,
+                        value = passwordState,
                         onValueChange = {
                             onPasswordTextChange(it)
                         },
@@ -310,12 +344,12 @@ fun SignUpScreenContent(
                         },
                         maxLines = 1,
                         singleLine = true,
-                        isError = passwordState.error != null,
+                        isError = formState.passwordError != null,
                         colors = outlineTextFieldColors
                     )
-                    if (passwordState.error != null) {
+                    if (formState.passwordError != null) {
                         Text(
-                            text = passwordState.error ?: "",
+                            text = formState.passwordError ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.End,
@@ -332,7 +366,7 @@ fun SignUpScreenContent(
                 Column {
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = repeatedPasswordState.text,
+                        value = repeatedPasswordState,
                         onValueChange = {
                             onRepeatPasswordTextChange(it)
                         },
@@ -362,12 +396,12 @@ fun SignUpScreenContent(
                         },
                         maxLines = 1,
                         singleLine = true,
-                        isError = passwordState.error != null,
+                        isError = formState.repeatedPasswordError != null,
                         colors = outlineTextFieldColors
                     )
-                    if (repeatedPasswordState.error != null) {
+                    if (formState.repeatedPasswordError != null) {
                         Text(
-                            text = repeatedPasswordState.error ?: "",
+                            text = formState.repeatedPasswordError ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.End,
@@ -388,7 +422,7 @@ fun SignUpScreenContent(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Checkbox(checked = acceptedTermsState.checked, onCheckedChange = {
+                        Checkbox(checked = acceptedTermsState, onCheckedChange = {
                             onAcceptedTermsClicked(it)
                         })
                         Text(
@@ -399,9 +433,9 @@ fun SignUpScreenContent(
                         )
                     }
                 }
-                if (acceptedTermsState.error != null) {
+                if (formState.termsError != null) {
                     Text(
-                        text = acceptedTermsState.error ?: "",
+                        text =formState.termsError ?: "",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error,
                         textAlign = TextAlign.End,
@@ -415,12 +449,7 @@ fun SignUpScreenContent(
                 Button(
                     onClick = onClickSignUp,
                     shape = CircleShape,
-                    enabled = when (viewModel.signUpResponse) {
-                        is Response.Loading -> false
-                        else -> {
-                            true
-                        }
-                    },
+                    enabled = !state.isLoading,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                     )
@@ -433,7 +462,18 @@ fun SignUpScreenContent(
                     )
                 }
             }
-
+            item {
+                Spacer(modifier = Modifier.height(32.dp))
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (state.isLoading) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
@@ -442,14 +482,14 @@ fun SignUpScreenContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-//                    SignUp(
-//                        sendEmailVerification = {
-//                            viewModel.sendEmailVerification()
-//                        },
-//                        showVerifyEmailMessage = {
-//                            showMessage(context, VERIFY_EMAIL_MESSAGE)
-//                        }
-//                    )
+                    SignUp(
+                        sendEmailVerification = {
+                            viewModel.sendEmailVerification()
+                        },
+                        showVerifyEmailMessage = {
+                            showMessage(context, VERIFY_EMAIL_MESSAGE)
+                        }
+                    )
                 }
             }
         }

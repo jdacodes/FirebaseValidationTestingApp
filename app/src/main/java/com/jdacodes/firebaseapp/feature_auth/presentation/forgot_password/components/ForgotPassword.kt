@@ -29,7 +29,7 @@ fun ForgotPassword(
         }
 
     }
-    //Check for Sign in Validation event is successful
+    //Check for Forgot Password Validation event is successful
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
         viewModel.validationEvents.collect { event ->

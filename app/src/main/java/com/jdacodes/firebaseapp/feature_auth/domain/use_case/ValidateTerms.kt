@@ -1,15 +1,17 @@
 package com.jdacodes.firebaseapp.feature_auth.domain.use_case
 
-class ValidateTerms {
-//    fun execute(acceptedTerms: Boolean): ValidationResult {
-//        if(!acceptedTerms) {
-//            return ValidationResult(
-//                successful = false,
-//                errorMessage = "Please accept the terms"
-//            )
-//        }
-//        return ValidationResult(
-//            successful = true
-//        )
-//    }
+import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
+
+class ValidateTerms() {
+    fun execute(acceptedTerms: Boolean): ValidationSignInResult {
+        if (!acceptedTerms) {
+            return ValidationSignInResult(
+                successful = false,
+                errorMessage = "Please accept the terms"
+            )
+        }
+        return ValidationSignInResult(
+            successful = true
+        )
+    }
 }

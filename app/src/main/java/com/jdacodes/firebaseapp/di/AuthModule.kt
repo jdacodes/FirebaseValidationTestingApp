@@ -7,6 +7,8 @@ import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.SignUpUseCase
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateEmail
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidatePassword
+import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateRepeatedPassword
+import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateTerms
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,11 +25,11 @@ object AuthModule {
         auth = Firebase.auth
     )
 
-    @Provides
-    @Singleton
-    fun provideSignUpUseCase(authRepository: AuthRepository): SignUpUseCase {
-        return SignUpUseCase(authRepository)
-    }
+//    @Provides
+//    @Singleton
+//    fun provideSignUpUseCase(authRepository: AuthRepository): SignUpUseCase {
+//        return SignUpUseCase(authRepository)
+//    }
 
     @Provides
     @Singleton
@@ -39,5 +41,17 @@ object AuthModule {
     @Singleton
     fun provideValidatePassword(): ValidatePassword {
         return ValidatePassword()
+    }
+
+    @Provides
+    @Singleton
+    fun provideValidateRepeatedPassword(): ValidateRepeatedPassword {
+        return ValidateRepeatedPassword()
+    }
+
+    @Provides
+    @Singleton
+    fun provideValidateTerms(): ValidateTerms {
+        return ValidateTerms()
     }
 }

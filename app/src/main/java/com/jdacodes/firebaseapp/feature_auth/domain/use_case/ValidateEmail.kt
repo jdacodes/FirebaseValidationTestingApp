@@ -6,6 +6,7 @@ import com.jdacodes.firebaseapp.core.Constants.EMAIL_INVALID_ERROR_MESSAGE
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
 import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordResult
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInResult
+import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpResult
 
 
 class ValidateEmail(private val repo: AuthRepository) {
@@ -32,8 +33,14 @@ class ValidateEmail(private val repo: AuthRepository) {
         return repo.firebaseSignInWithEmailAndPassword(email, password)
     }
 
+    suspend fun firebaseSignUpEmailAndPassword(email: String, password: String): SignUpResult {
+        return repo.firebaseSignUpWithEmailAndPassword(email, password)
+    }
+
     suspend fun firebaseSendPasswordResetEmail(email: String): ForgotPasswordResult {
         return repo.sendPasswordResetEmail(email)
     }
+
+    suspend fun firebaseSendEmailVerification() = repo.sendEmailVerification()
 
 }

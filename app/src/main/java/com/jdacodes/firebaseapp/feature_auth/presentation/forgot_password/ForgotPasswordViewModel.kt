@@ -105,7 +105,7 @@ class ForgotPasswordViewModel @Inject constructor(
     fun updateForgotPasswordState() {
         viewModelScope.launch {
             val result = validateEmail.firebaseSendPasswordResetEmail(
-                formState.email
+                formState.email.trim()
             )
             onForgotPasswordResult(result)
         }
