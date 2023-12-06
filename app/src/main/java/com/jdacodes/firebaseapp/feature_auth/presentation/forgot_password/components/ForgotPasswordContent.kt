@@ -42,16 +42,7 @@ fun ForgotPasswordContent(
     padding: PaddingValues,
     onClickForgotPassword: () -> Unit
 ) {
-//    var email by rememberSaveable(
-//        stateSaver = TextFieldValue.Saver,
-//        init = {
-//            mutableStateOf(
-//                value = TextFieldValue(
-//                    text = EMPTY_STRING
-//                )
-//            )
-//        }
-//    )
+
     val outlineTextFieldColors = TextFieldDefaults.outlinedTextFieldColors(
         focusedBorderColor = MaterialTheme.colorScheme.primary,
         unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
@@ -115,7 +106,6 @@ fun ForgotPasswordContent(
             Text(
                 color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
-//                        .fillMaxWidth()
                     .padding(12.dp),
                 text = RESET_PASSWORD_BUTTON,
                 fontSize = 15.sp,

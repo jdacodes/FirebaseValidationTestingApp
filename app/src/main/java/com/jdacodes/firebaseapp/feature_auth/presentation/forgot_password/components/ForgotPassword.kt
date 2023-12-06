@@ -6,10 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jdacodes.firebaseapp.core.components.ProgressBar
-import com.jdacodes.firebaseapp.core.util.Response
 import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordViewModel
-import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInViewModel
 
 @Composable
 fun ForgotPassword(
@@ -45,8 +42,6 @@ fun ForgotPassword(
 
                 }
 
-                else -> {
-                }
             }
         }
     }

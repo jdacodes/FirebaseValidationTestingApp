@@ -7,13 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jdacodes.firebaseapp.core.Constants
 import com.jdacodes.firebaseapp.core.Constants.FORGOT_PASSWORD_FAILURE_MESSAGE
-import com.jdacodes.firebaseapp.core.util.Response
-import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
-import com.jdacodes.firebaseapp.feature_auth.domain.repository.SendPasswordResetEmailResponse
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateEmail
-import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInFormState
-import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInState
-import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +19,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-//    private val repo: AuthRepository
     private val validateEmail: ValidateEmail,
 ) : ViewModel() {
 
@@ -34,16 +27,10 @@ class ForgotPasswordViewModel @Inject constructor(
 
     var formState by mutableStateOf(ForgotPasswordFormState())
 
-    var sendPasswordResetEmailResponse by mutableStateOf<SendPasswordResetEmailResponse>(
-        Response.Success(
-            false
-        )
-    )
-
-    private val validationEventChannel = Channel<ForgotPasswordViewModel.ValidationEvent>()
+    private val validationEventChannel = Channel<ValidationEvent>()
     val validationEvents = validationEventChannel.receiveAsFlow()
 
-    fun onForgotPasswordResult(result: ForgotPasswordResult) {
+    private fun onForgotPasswordResult(result: ForgotPasswordResult) {
         _state.update { it.copy(isLoading = true) }
         _state.update {
             it.copy(
@@ -110,11 +97,6 @@ class ForgotPasswordViewModel @Inject constructor(
             onForgotPasswordResult(result)
         }
     }
-
-//    fun sendPasswordResetEmail(email: String) = viewModelScope.launch {
-//        sendPasswordResetEmailResponse = Response.Loading
-//        sendPasswordResetEmailResponse = repo.sendPasswordResetEmail(email)
-//    }
 
     sealed class ValidationEvent {
         object Success : ValidationEvent()

@@ -58,12 +58,11 @@ class MainActivity : ComponentActivity() {
         if (isUserSignedOut) {
             NavigateToSignInScreen()
         } else {
-            // Firebase is not sending Email Verification link!, verification is disabled for now
-//            if (viewModel.isEmailVerified) {
+            if (viewModel.isEmailVerified) {
                 NavigateToProfileScreen()
-//            } else {
-//                NavigateToVerifyEmailScreen()
-//            }
+            } else {
+                NavigateToVerifyEmailScreen()
+            }
         }
     }
 

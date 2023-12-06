@@ -5,12 +5,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.jdacodes.firebaseapp.core.util.Response
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
-import com.jdacodes.firebaseapp.feature_auth.domain.repository.SendPasswordResetEmailResponse
 import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordResult
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInResult
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.UserData
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpResult
-import com.jdacodes.firebaseapp.feature_auth.presentation.verify_email.VerifyEmailResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
@@ -24,7 +22,7 @@ import javax.inject.Singleton
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth
-):AuthRepository {
+) : AuthRepository {
     override val currentUser get() = auth.currentUser
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String, password: String
@@ -34,9 +32,7 @@ class AuthRepositoryImpl @Inject constructor(
             data = true,
             errorMessage = null
         )
-//        Response.Success(true)
     } catch (e: Exception) {
-//        Response.Failure(e)
         e.printStackTrace()
         if (e is CancellationException) throw e
         SignUpResult(
@@ -98,40 +94,15 @@ class AuthRepositoryImpl @Inject constructor(
         auth.currentUser?.sendEmailVerification()?.await()
         Log.d("sendEmailVerification", "Email sent.")
         Response.Success(true)
-//        VerifyEmailResult(
-//            data = true,
-//            errorMessage = null
-//        )
 
     } catch (e: Exception) {
         Log.d("sendEmailVerification", "Email not sent.")
         Response.Failure(e)
-
-//        e.printStackTrace()
-//        if (e is CancellationException) throw e
-//        VerifyEmailResult(
-//            data = false,
-//            errorMessage = e.message
-//        )
     }
-
-//    override suspend fun sendPasswordResetEmail(email: String) = try {
-//        auth.sendPasswordResetEmail(email).await()
-//        Response.Success(true)
-//    } catch (e: Exception) {
-//        Response.Failure(e)
-//    }
 
     override suspend fun sendPasswordResetEmail(email: String) = try {
         val user = auth.sendPasswordResetEmail(email).await()
         ForgotPasswordResult(
-//            data = user?.run {
-//                UserData(
-//                    userId = uid,
-//                    username = displayName,
-//                    profilePictureUrl = photoUrl?.toString()
-//                )
-//            },
             data = true,
             errorMessage = null
         )

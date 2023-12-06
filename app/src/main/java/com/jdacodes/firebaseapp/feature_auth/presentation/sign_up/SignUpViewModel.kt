@@ -1,7 +1,6 @@
 package com.jdacodes.firebaseapp.feature_auth.presentation.sign_up
 
 import android.util.Log
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,27 +8,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jdacodes.firebaseapp.core.Constants
 import com.jdacodes.firebaseapp.core.Constants.EMPTY_STRING
-import com.jdacodes.firebaseapp.core.Constants.SIGNUP_FAILURE_MESSAGE
-import com.jdacodes.firebaseapp.core.Constants.SIGNUP_SUCCESSFUL_MESSAGE
-import com.jdacodes.firebaseapp.core.domain.model.CheckFieldState
-import com.jdacodes.firebaseapp.core.domain.model.TextFieldState
 import com.jdacodes.firebaseapp.core.util.Response
-import com.jdacodes.firebaseapp.core.util.UIEvents
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.SendEmailVerificationResponse
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.SignUpResponse
-import com.jdacodes.firebaseapp.feature_auth.domain.use_case.SignUpUseCase
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateEmail
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidatePassword
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateRepeatedPassword
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateTerms
-import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordFormState
-import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordState
-import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update

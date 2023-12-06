@@ -5,8 +5,8 @@ data class ForgotPasswordResult(
     val errorMessage: String?,
 )
 
-data class UserData(
-    val userId: String,
-    val username: String?,
-    val profilePictureUrl: String?
-)
+//data class UserData(
+//    val userId: String,
+//    val username: String?,
+//    val profilePictureUrl: String?
+//)

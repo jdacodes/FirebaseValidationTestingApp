@@ -21,7 +21,6 @@ import com.jdacodes.firebaseapp.profile.component.RevokeAccess
 @Composable
 fun ProfileScreen(
     userData: UserData?,
-//    onSignOut: () -> Unit
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val TAG = "ProfileScreen"

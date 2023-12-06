@@ -10,8 +10,6 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.jdacodes.firebaseapp.R
-import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpResult
-
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 

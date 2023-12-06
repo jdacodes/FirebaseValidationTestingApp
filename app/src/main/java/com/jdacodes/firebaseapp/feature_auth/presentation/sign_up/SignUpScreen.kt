@@ -31,11 +31,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -52,7 +50,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.createFontFamilyResolver
 import androidx.compose.ui.text.googlefonts.isAvailableOnDevice
 import androidx.compose.ui.text.input.KeyboardType
@@ -65,22 +62,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jdacodes.firebaseapp.core.Constants
 import com.jdacodes.firebaseapp.core.Constants.EMPTY_STRING
-import com.jdacodes.firebaseapp.core.Constants.SIGNUP_SUCCESSFUL_MESSAGE
 import com.jdacodes.firebaseapp.core.Constants.VERIFY_EMAIL_MESSAGE
-import com.jdacodes.firebaseapp.core.domain.model.CheckFieldState
-import com.jdacodes.firebaseapp.core.domain.model.TextFieldState
-import com.jdacodes.firebaseapp.core.util.Response
-import com.jdacodes.firebaseapp.core.util.UIEvents
 import com.jdacodes.firebaseapp.core.util.Utils.Companion.showMessage
-import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordFormState
-import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordState
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SendEmailVerification
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SignUp
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.components.SignUpTopBar
 import com.jdacodes.firebaseapp.ui.theme.fontFamily
 import com.jdacodes.firebaseapp.ui.theme.provider
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.flow.collectLatest
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -173,14 +162,14 @@ fun SignUpScreen(
                 )
             }
         )
-//        SignUp(
-//            sendEmailVerification = {
-//                viewModel.sendEmailVerification()
-//            },
-//            showVerifyEmailMessage = {
-//                showMessage(context, VERIFY_EMAIL_MESSAGE)
-//            }
-//        )
+        SignUp(
+            sendEmailVerification = {
+                viewModel.sendEmailVerification()
+            },
+            showVerifyEmailMessage = {
+                showMessage(context, VERIFY_EMAIL_MESSAGE)
+            }
+        )
         SendEmailVerification()
     }
 }
@@ -474,24 +463,24 @@ fun SignUpScreenContent(
                     }
                 }
             }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    SignUp(
-                        sendEmailVerification = {
-                            viewModel.sendEmailVerification()
-                        },
-                        showVerifyEmailMessage = {
-                            showMessage(context, VERIFY_EMAIL_MESSAGE)
-                        }
-                    )
-                }
-            }
+//            item {
+//                Spacer(modifier = Modifier.height(16.dp))
+//                Row(
+//                    Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.Center,
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//
+//                    SignUp(
+//                        sendEmailVerification = {
+//                            viewModel.sendEmailVerification()
+//                        },
+//                        showVerifyEmailMessage = {
+//                            showMessage(context, VERIFY_EMAIL_MESSAGE)
+//                        }
+//                    )
+//                }
+//            }
         }
     }
 }
