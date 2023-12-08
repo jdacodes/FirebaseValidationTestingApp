@@ -3,12 +3,14 @@ package com.jdacodes.firebaseapp.di
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.jdacodes.firebaseapp.feature_auth.data.repository.AuthRepositoryImpl
+import com.jdacodes.firebaseapp.feature_auth.data.util.EmailValidatorImpl
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.SignUpUseCase
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateEmail
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidatePassword
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateRepeatedPassword
 import com.jdacodes.firebaseapp.feature_auth.domain.use_case.ValidateTerms
+import com.jdacodes.firebaseapp.feature_auth.domain.util.EmailValidator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,6 +27,10 @@ object AuthModule {
         auth = Firebase.auth
     )
 
+    @Provides
+    @Singleton
+    fun provideEmailValidator(): EmailValidator = EmailValidatorImpl()
+
 //    @Provides
 //    @Singleton
 //    fun provideSignUpUseCase(authRepository: AuthRepository): SignUpUseCase {
@@ -33,8 +39,8 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun provideValidateEmail(authRepository: AuthRepository): ValidateEmail {
-        return ValidateEmail(authRepository)
+    fun provideValidateEmail(authRepository: AuthRepository, emailValidator: EmailValidator): ValidateEmail {
+        return ValidateEmail(authRepository,emailValidator)
     }
 
     @Provides

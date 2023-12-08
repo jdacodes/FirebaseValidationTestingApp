@@ -4,12 +4,13 @@ import android.util.Patterns
 import com.jdacodes.firebaseapp.core.Constants.EMAIL_BLANK_ERROR_MESSAGE
 import com.jdacodes.firebaseapp.core.Constants.EMAIL_INVALID_ERROR_MESSAGE
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
+import com.jdacodes.firebaseapp.feature_auth.domain.util.EmailValidator
 import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordResult
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInResult
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpResult
 
 
-class ValidateEmail(private val repo: AuthRepository) {
+class ValidateEmail(private val repo: AuthRepository, private val emailValidator: EmailValidator) {
     fun execute(email: String): ValidationSignInResult {
         if (email.isBlank()) {
             return ValidationSignInResult(
@@ -17,7 +18,8 @@ class ValidateEmail(private val repo: AuthRepository) {
                 errorMessage = EMAIL_BLANK_ERROR_MESSAGE
             )
         }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+//        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!emailValidator.isValid(email)) {
             return ValidationSignInResult(
                 successful = false,
                 errorMessage = EMAIL_INVALID_ERROR_MESSAGE

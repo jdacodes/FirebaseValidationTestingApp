@@ -67,8 +67,11 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.test.ext:junit-ktx:1.1.5")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation("com.google.dagger:hilt-android-testing:2.44")
+    kaptAndroidTest("com.google.dagger:hilt-compiler:2.44")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
@@ -95,6 +98,11 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     //Downloadable Custom Fonts
     implementation("androidx.compose.ui:ui-text-google-fonts:1.5.4")
+    //Mockito
+    testImplementation("org.mockito:mockito-core:5.8.0")
+    testImplementation ("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    testImplementation ("io.mockk:mockk:1.13.8")
+
 
 
 }
