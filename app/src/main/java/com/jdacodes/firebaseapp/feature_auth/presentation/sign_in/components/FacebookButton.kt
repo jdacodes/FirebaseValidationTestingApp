@@ -71,14 +71,14 @@ fun FacebookButton(
                     val credential = FacebookAuthProvider.getCredential(token)
                     val user = Firebase.auth.signInWithCredential(credential).await().user
                     if (user != null) {
-                        // TODO: Displays generic photo from user 
+                        // TODO: Displays generic photo from user, isEmailVerified always false
                         var photoUrl: Uri? = null
                         user.apply {
                             for (userInfo in providerData) {
-                                if (userInfo.providerId == "facebook.com") {
+//                                if (userInfo.providerId == "facebook.com") {
                                     photoUrl = userInfo.photoUrl
                                     Log.d("facebook photo", photoUrl.toString())
-                                }
+//                                }
                             }
                         }
 

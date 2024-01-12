@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -69,6 +71,12 @@ fun ProfileScreen(
             selectedIcon = Icons.Filled.AccountCircle,
             unselectedIcon = Icons.Outlined.AccountCircle,
             route = Screen.ProfileScreen.route
+        ),
+        NavigationItem(
+            title = "Chat",
+            selectedIcon = Icons.Filled.Chat,
+            unselectedIcon = Icons.Outlined.Chat,
+            route = Screen.UserListScreen.fullRoute
         ),
     )
 

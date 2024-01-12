@@ -4,6 +4,8 @@ plugins {
     id("com.google.gms.google-services")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("com.onesignal.androidsdk.onesignal-gradle-plugin")
+    id("com.github.ben-manes.versions")
 
 }
 
@@ -81,11 +83,11 @@ dependencies {
     //Facebook SDK
     implementation("com.facebook.android:facebook-android-sdk:16.0.0")
     //Firebase BOM
-    // Import the BoM for the Firebase platform
     implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
-    //Firebase Authentication library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-storage")
+
     //Google Play Services
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     //Coil
@@ -96,6 +98,14 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.46")
     kapt("com.google.dagger:hilt-android-compiler:2.45")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    //Gson
+    implementation("com.google.code.gson:gson:2.9.1")
+    //Accompanist
+    implementation( "com.google.accompanist:accompanist-systemuicontroller:0.26.1-alpha")
+    implementation ("com.google.accompanist:accompanist-swiperefresh:0.26.1-alpha")
+    implementation ("com.google.accompanist:accompanist-pager:0.26.1-alpha")
+    //One Signal
+    implementation ("com.onesignal:OneSignal:[4.0.0, 4.99.99]")
     //Downloadable Custom Fonts
     implementation("androidx.compose.ui:ui-text-google-fonts:1.5.4")
     //Mockito

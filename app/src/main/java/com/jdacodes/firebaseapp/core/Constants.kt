@@ -19,6 +19,8 @@ object Constants {
     const val SIGN_UP_SCREEN = "Sign up"
     const val VERIFY_EMAIL_SCREEN = "Verify email"
     const val PROFILE_SCREEN = "Profile"
+    const val USER_LIST_SCREEN = "User list"
+    const val CHAT_SCREEN = "Chat"
 
     //Labels
     const val EMAIL_LABEL = "Email"
@@ -59,4 +61,8 @@ object Constants {
     //Error Messages
     const val SENSITIVE_OPERATION_MESSAGE = "This operation is sensitive and requires recent authentication. Log in again before retrying this request."
 
+    //Chat Feature
+    const val ERROR_MESSAGE = "Unexpected error."
+    const val NO_CHATROOM_IN_FIREBASE_DATABASE = "NO_CHATROOM_IN_FIREBASE_DATABASE"
+    const val ONESIGNAL_APP_ID = "YOUR_ONE_SIGNAL"
 }

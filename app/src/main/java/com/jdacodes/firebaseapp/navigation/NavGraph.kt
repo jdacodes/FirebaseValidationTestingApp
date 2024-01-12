@@ -5,17 +5,26 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.jdacodes.firebaseapp.core.Constants
 import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordFormEvent
 import com.jdacodes.firebaseapp.feature_auth.presentation.forgot_password.ForgotPasswordScreen
@@ -27,13 +36,18 @@ import com.jdacodes.firebaseapp.feature_auth.presentation.sign_in.SignInViewMode
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpScreen
 import com.jdacodes.firebaseapp.feature_auth.presentation.sign_up.SignUpViewModel
 import com.jdacodes.firebaseapp.feature_auth.presentation.verify_email.VerifyEmailScreen
+import com.jdacodes.firebaseapp.feature_chat.presentation.chat.ChatScreen
+import com.jdacodes.firebaseapp.feature_chat.presentation.userlist.Userlist
 import com.jdacodes.firebaseapp.profile.ProfileScreen
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NavGraph(
     navController: NavHostController,
     googleAuthUiClient: GoogleAuthUiClient,
+    snackbarHostState: SnackbarHostState,
+    keyboardController: SoftwareKeyboardController
 ) {
     NavHost(
         navController = navController,
@@ -181,5 +195,79 @@ fun NavGraph(
             )
         }
 
+        composable(
+//            BottomNavItem.UserList.fullRoute,
+            Screen.UserListScreen.fullRoute,
+//            enterTransition = {
+//                when (initialState.destination.route) {
+//                    Screen.UserListScreen.fullRoute ->
+//                        slideIntoContainer(
+//                            AnimatedContentScope.SlideDirection.Left,
+//                            animationSpec = tween(250, easing = LinearEasing)
+//                        )
+//                    BottomNavItem.SignIn.fullRoute ->
+//                        slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(700))
+//                    BottomNavItem.SignUp.fullRoute ->
+//                        slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(700))
+//                    BottomNavItem.Profile.fullRoute ->
+//                        slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(700))
+
+//                    else -> null
+//                }
+
+//            }, exitTransition = {
+//                when (targetState.destination.route) {
+//                    Screen.UserListScreen.fullRoute ->
+//                        slideOutOfContainer(
+//                            AnimatedContentScope.SlideDirection.Right,
+//                            animationSpec = tween(250, easing = LinearEasing)
+//                        )
+//                    else -> null
+//                }
+//            }
+        ) {
+            Userlist(
+                navController = navController,
+                snackbarHostState = snackbarHostState,
+                keyboardController = keyboardController
+            )
+        }
+
+        composable(
+            Screen.ChatScreen.fullRoute,
+            arguments = listOf(
+                navArgument("chatroomUUID") {
+                    type = NavType.StringType
+                }, navArgument("opponentUUID") {
+                    type = NavType.StringType
+                }, navArgument("registerUUID") {
+                    type = NavType.StringType
+                }, navArgument("oneSignalUserId") {
+                    type = NavType.StringType
+                })
+        ) {
+            val chatroomUUID = remember {
+                it.arguments?.getString("chatroomUUID")
+            }
+            val opponentUUID = remember {
+                it.arguments?.getString("opponentUUID")
+            }
+            val registerUUID = remember {
+                it.arguments?.getString("registerUUID")
+            }
+            val oneSignalUserId = remember {
+                it.arguments?.getString("oneSignalUserId")
+            }
+
+            ChatScreen(
+                chatRoomUUID = chatroomUUID ?: "",
+                opponentUUID = opponentUUID ?: "",
+                registerUUID = registerUUID ?: "",
+                oneSignalUserId = oneSignalUserId ?: "",
+                navController = navController,
+                snackbarHostState = snackbarHostState,
+                keyboardController = keyboardController
+            )
+        }
     }
 }
