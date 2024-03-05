@@ -112,6 +112,15 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.8.0")
     testImplementation ("org.mockito.kotlin:mockito-kotlin:5.2.1")
     testImplementation ("io.mockk:mockk:1.13.8")
+    //Google truth
+    testImplementation("com.google.truth:truth:1.0.1")
+    androidTestImplementation("com.google.truth:truth:1.0.1")
+    //MockK
+    val mockkVersion = "1.13.9"
+    testImplementation("io.mockk:mockk:${mockkVersion}")
+    testImplementation ("io.mockk:mockk-agent:${mockkVersion}")
+    androidTestImplementation("io.mockk:mockk-android:${mockkVersion}")
+    androidTestImplementation( "io.mockk:mockk-agent:${mockkVersion}")
 
 
 
