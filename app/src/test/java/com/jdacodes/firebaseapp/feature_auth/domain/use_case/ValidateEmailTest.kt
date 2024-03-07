@@ -1,66 +1,73 @@
 package com.jdacodes.firebaseapp.feature_auth.domain.use_case
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.google.firebase.auth.FirebaseAuth
 import com.jdacodes.firebaseapp.core.Constants
-import com.jdacodes.firebaseapp.feature_auth.data.repository.AuthRepositoryImpl
 import com.jdacodes.firebaseapp.feature_auth.domain.repository.AuthRepository
 import com.jdacodes.firebaseapp.feature_auth.domain.util.EmailValidator
-import dagger.hilt.android.testing.HiltAndroidRule
-import org.junit.Assert.*
-
+import io.mockk.Called
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito
-import javax.inject.Inject
-@RunWith(AndroidJUnit4::class)
+
+
 class ValidateEmailTest {
-    // TODO: Events where not received when executing tests 
     private lateinit var validateEmail: ValidateEmail
+
+    @MockK
     private lateinit var mockEmailValidator: EmailValidator
 
-//    @Inject
-//    lateinit var validateEmail: ValidateEmail
-//
-//    @Inject
-//    @Mock
-//    lateinit var mockEmailValidator: EmailValidator
-
-//    @Inject
-//    @Mock
-//    lateinit var mockRepository: AuthRepository
+    @MockK
+    private lateinit var mockRepository: AuthRepository
 
     @Before
     fun setUp() {
-        val mockAuth = Mockito.mock(FirebaseAuth::class.java)
-        val mockRepository =
-            Mockito.spy(AuthRepositoryImpl(mockAuth)) // Spy on the real implementation
-        HiltAndroidRule(this).inject()
-        mockEmailValidator = Mockito.mock(EmailValidator::class.java)
-        validateEmail = ValidateEmail(mockRepository, mockEmailValidator)
+        MockKAnnotations.init(this)
+        validateEmail = produceUseCase()
     }
 
-    @Test
-    fun testValidEmail() {
-        val validEmail = "valid@email.com"
-        Mockito.`when`(mockEmailValidator.isValid(validEmail)).thenReturn(true)
-//        Mockito.`when`(mockRepository.isValidEmail(validEmail))
-//        Mockito.`when`(mockRepository.sendEmailVerification())
-//            .thenReturn(true) // Stub the specific method
+    private fun produceUseCase() = ValidateEmail(
+        repo = mockRepository,
+        emailValidator = mockEmailValidator
 
-        val result = validateEmail.execute(validEmail)
-        assertTrue(result.successful!!)
-    }
+    )
+@Test
+fun `empty email returns false and error message`() = runBlocking {
+    val email = ""
+
+    val result = validateEmail.execute(email)
+
+    assert(result.successful == false)
+    assert(result.errorMessage == Constants.EMAIL_BLANK_ERROR_MESSAGE)
+    verify { mockEmailValidator wasNot Called }
+}
 
     @Test
-    fun testBlankEmail() {
-        val email = ""
+    fun `invalid email returns false and error message`()  = runBlocking {
+        val email = "invalidEmail"
+        coEvery { mockEmailValidator.isValid(email) }.returns(false)
+
         val result = validateEmail.execute(email)
 
-        assertFalse(result.successful!!)
-        assertEquals(Constants.EMAIL_BLANK_ERROR_MESSAGE, result.errorMessage)
+        assert(result.successful == false)
+        assert(result.errorMessage == Constants.EMAIL_INVALID_ERROR_MESSAGE)
+        verify { mockEmailValidator.isValid(email) }
     }
+
+    @Test
+    fun `valid email returns true and no error message`() = runBlocking {
+        val email = "valid@email.com"
+        coEvery { mockEmailValidator.isValid(email) }.returns(true)
+
+        val result = validateEmail.execute(email)
+
+        assert(result.successful == true)
+        assert(result.errorMessage == null)
+        verify { mockEmailValidator.isValid(email) }
+    }
+
+
 
 }
